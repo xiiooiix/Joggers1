@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "556000223823",
+    "firebase_url": "https://joggers1-c6f12.firebaseio.com",
+    "project_id": "joggers1-c6f12",
+    "storage_bucket": "joggers1-c6f12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556000223823:android:406401ebcc943ba0",
+        "android_client_info": {
+          "package_name": "kkt.com.joggers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "556000223823-osemb47o3e8m339d8lo4mgj549trgkk2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kkt.com.joggers",
+            "certificate_hash": "69abf40e9c553d6a4cf39945dffd1755601ed805"
+          }
+        },
+        {
+          "client_id": "556000223823-7bc0q9hbktv5du51ka0pip7on0f8k86a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUJv2co6lza9s3LHjPgSOSbH2An-PEjjE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "556000223823-7bc0q9hbktv5du51ka0pip7on0f8k86a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
