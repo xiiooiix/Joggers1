@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_board) {
             fragmentManager.beginTransaction().replace(R.id.content_main, new BoardFragment()).commit();
+            //dfadfasdf
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
