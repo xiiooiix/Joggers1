@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="kkt.com.joggers.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -21,8 +22,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
+        android:id="@+id/content_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/content_main" />
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>
