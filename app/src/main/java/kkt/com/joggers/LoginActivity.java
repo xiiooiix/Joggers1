@@ -24,12 +24,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final int RC_SIGN_IN = 0;
     private static final String TAG = "Joggers.LoginActivity";
+    private static final int RC_SIGN_IN = 0;
 
     private SignInButton signInButton;
     private GoogleSignInClient mGoogleSignInClient;
-    private static FirebaseAuth mAuth;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +80,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         LoginActivity.this.startActivity(intent);
         finish();
-    }
-
-    public static FirebaseAuth getMAuth() {
-        // 다른 Activity에서 Firebase Authentication 정보를 사용할 수 있다
-        return mAuth;
     }
 
     /* == 로그인 처리 함수들 == */
