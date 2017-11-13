@@ -1,0 +1,66 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="kkt.com.joggers.Board_WriteFragment">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/wrtie_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/icon_image" />
+
+        <Button
+            android:id="@+id/write_camera"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_toRightOf="@+id/wrtie_image"
+            android:layout_margin="5dp"
+            android:background="@drawable/ic_camera_alt_black_24dp"/>
+
+        <Button
+            android:id="@+id/write_album"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_toRightOf="@+id/wrtie_image"
+            android:layout_below="@id/write_camera"
+            android:layout_margin="5dp"
+            android:background="@drawable/ic_photo_library_black_24dp"/>
+
+        <EditText
+            android:id="@+id/wrtie_context"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@+id/wrtie_image"
+            android:layout_margin="10dp"
+            android:hint="context"
+            android:textColorHint="@color/colorPrimary" />
+
+
+        <Button
+            android:id="@+id/write_wrtie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/wrtie_context"
+            android:layout_toStartOf="@+id/write_cancel"
+            android:layout_toLeftOf="@+id/write_cancel"
+            android:layout_marginRight="10dp"
+            android:text="작성"
+            android:textSize="10pt" />
+
+        <Button
+            android:id="@+id/write_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/wrtie_context"
+            android:layout_below="@+id/wrtie_context"
+            android:text="취소"
+            android:textSize="10pt" />
+
+    </RelativeLayout>
+</FrameLayout>
