@@ -26,9 +26,9 @@ public class BoardFragment extends Fragment {
     BoardAdapter adapter;
     Button btn;
 
-    private String context, id, time;
-    Drawable img;
-    private boolean write=false;
+    static private String context, id, time;
+    static Drawable img;
+    static private boolean write=false;
     private boolean newwrite=false;
 
 
@@ -47,6 +47,7 @@ public class BoardFragment extends Fragment {
 
     public void setImg(Drawable img) {
         if(img==null) { //null일때 뭔가를 넣어야하는데 뭘 넣어야할 지 모르겟다.
+            getActivity();
             Log.i("ASDF", "aaa");
         }
         else {
@@ -56,7 +57,11 @@ public class BoardFragment extends Fragment {
         }
     }
 
-    public void setWrite(Boolean write){ this.write = write;}
+    public void setWrite(Boolean write){
+        this.write = write;
+        Log.i("ASDD", "write 바꾸기 - " +write.toString());
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,20 +76,6 @@ public class BoardFragment extends Fragment {
 
         adapter = new BoardAdapter(getContext(), boards);
 
-        if(write){     //새로운 게시글 추가 됐을 때
-            Log.i("ASDF", "BoardFragment- oncearteview-- " + img.toString());
-            if(img == null){    //이미지 없을
-                Log.i("ASDF", "img null:  " + a.toString());
-                img = ContextCompat.getDrawable(a, R.drawable.hart1);
-
-            }
-                Log.i("ASDF", "img exit: ");
-                adapter.addItem(id, time, img, context);
-
-
-        }
-        else
-            Log.i("ASDF", "NNNNNNNadd!!!!!");
 
         list.setAdapter(adapter);
 
@@ -95,9 +86,8 @@ public class BoardFragment extends Fragment {
             public void onClick(View view) {
                 Log.i("ASD", "글작성 ㄱㄱ");
                 FragmentManager fragmentManager = getFragmentManager();
-                //fragmentManager.beginTransaction().add(R.id.content_main, new Board_WriteFragment()).commit();
-                fragmentManager.beginTransaction().replace(R.id.content_main, new Board_WriteFragment()).commit();
 
+                fragmentManager.beginTransaction().replace(R.id.content_main, new Board_WriteFragment(),"BoardFragment").addToBackStack("BoardFragment").commit();
             }
         });
 
@@ -107,4 +97,25 @@ public class BoardFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+
+        if(write){     //새로운 게시글 추가 됐을 때
+            Log.i("ASDD", "wrtie exit");
+            if(img == null){    //이미지 없을
+                Log.i("ASDF", "img null:  " + a.toString());
+                img = ContextCompat.getDrawable(a, R.drawable.hart1);
+            }
+            Log.i("ASDF", "img exit: ");
+            adapter.addItem(id, time, img, context);
+
+
+        }
+        else
+            Log.i("ASDD", "wrtie null");
+
+    }
 }

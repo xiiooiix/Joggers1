@@ -89,11 +89,13 @@ public class Board_WriteFragment extends Fragment {
                 }
                 boardFragment.setContext(context);
                 boardFragment.setTime("123");
+                Log.i("ASDD", "write true로 바꿀게");
                 boardFragment.setWrite(true);
 
+                getFragmentManager().popBackStackImmediate();
+                //FragmentManager fragmentManager = getFragmentManager();
 
-                FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.content_main, boardFragment).commit();
+                //fragmentManager.beginTransaction().replace(R.id.content_main, boardFragment).commit();
 
             }
         });
