@@ -1,6 +1,6 @@
 package kkt.com.joggers;
 
-import android.os.Bundle;
+        import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -14,9 +14,12 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +66,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_sign_out) {
+            FirebaseAuth.getInstance().signOut();
+        } else if (id == R.id.action_exit) {
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_board) {
             fragmentManager.beginTransaction().replace(R.id.content_main, new BoardFragment()).commit();
+            //dfadfasdf
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
