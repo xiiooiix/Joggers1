@@ -78,6 +78,8 @@ public class Board_WriteFragment extends Fragment {
                 String context = editText.getText().toString();
                 String id = currentUser.getDisplayName();
 
+                /*게시판 내용 다 저장하기*/
+
                 boardFragment.setId(id);
                 if(img.getDrawable() != null) { //게시글 이미지 있을 때
                     Log.i("ASDF", "WriteFragment img not null: ");
@@ -208,7 +210,7 @@ public class Board_WriteFragment extends Fragment {
 
     }
 
-    public void cropImage1() {
+    public void cropImage1() {  //사진 찍고 무조건 잘라내기
         cropflag =false;
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
         cropIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -223,7 +225,7 @@ public class Board_WriteFragment extends Fragment {
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
     }
 
-    public void cropImage(){
+    public void cropImage(){    //ㅅ앨번 선택하고 잘라내기
         cropflag = true;
         Log.d("ASD", "cropImage - Call");
         Log.d("ASD", "photoURI : " + photoURI + " / albumURI : " + albumURI);

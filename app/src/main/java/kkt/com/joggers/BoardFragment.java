@@ -26,10 +26,10 @@ public class BoardFragment extends Fragment {
     BoardAdapter adapter;
     Button btn;
 
+    /*보드 라이트 */
     static private String context, id, time;
     static Drawable img;
     static private boolean write=false;
-    private boolean newwrite=false;
 
 
     public BoardFragment() { }
@@ -79,7 +79,7 @@ public class BoardFragment extends Fragment {
 
         list.setAdapter(adapter);
 
-        btn = (Button)view.findViewById(R.id.btn_write);
+        btn = (Button)view.findViewById(R.id.btn_write);    //작성하기 버튼
 
         btn.setOnClickListener(new View.OnClickListener(){
             @Override

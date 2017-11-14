@@ -53,18 +53,19 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         holder.b_time.setText(item.getTime());
         holder.b_context.setText(item.getContext());
         holder.b_hartNum.setText(Integer.toString(item.getHartNum()));
-        if(item.getImage() ==null){
+
+        if(item.getImage() ==null){//게시판 작성할 때 사진 x
             holder.b_img.setBackground(drawable_img);
         }
-        else{
+        else{   //사진 o
             holder.b_img.setBackground(item.getImage());
             Log.i("ASDF", "width: " + item.getImage().getIntrinsicWidth() +" // height: "+item.getImage().getIntrinsicHeight());
-            holder.b_img.getLayoutParams().width = item.getImage().getIntrinsicWidth();
-            holder.b_img.getLayoutParams().height = item.getImage().getIntrinsicHeight();
+            holder.b_img.getLayoutParams().width = item.getImage().getIntrinsicWidth(); //크기    520
+            holder.b_img.getLayoutParams().height = item.getImage().getIntrinsicHeight();   //크기 520
         }
 
         holder.b_btn.setBackground(drawable_btn);
-
+            /*좋아요 기능*/
         holder.b_btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
