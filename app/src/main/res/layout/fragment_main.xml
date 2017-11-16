@@ -2,11 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="kkt.com.joggers.MainFragment">
+    tools:content="kkt.com.joggers.MainFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textView"
         android:layout_width="36dp"
         android:layout_height="match_parent"
         android:text="gelnfldnfldfddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" />
