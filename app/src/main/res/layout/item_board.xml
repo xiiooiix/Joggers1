@@ -21,7 +21,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:text="id"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                 android:textColor="#000000" />
 
@@ -31,7 +30,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
-                android:text="time"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 
             <ImageView
@@ -47,15 +45,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/board_imageView"
-                android:text="content" />
+                android:layout_below="@+id/board_imageView" />
 
             <Button
                 android:id="@+id/board_heart"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_below="@+id/board_content"
-
                 android:background="@drawable/heart_empty" />
 
             <TextView
@@ -64,8 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/board_content"
                 android:layout_toEndOf="@+id/board_heart"
-                android:layout_marginTop="2dp"
-                android:text="12" />
+                android:layout_marginTop="2dp" />
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>

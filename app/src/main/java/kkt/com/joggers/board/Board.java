@@ -8,6 +8,7 @@ class Board {
     private boolean heart = false;
     private int heartNum;
 
+    // DataSnapshot.getValue(Board.class)를 위한 기본생성자
     Board() {
     }
 

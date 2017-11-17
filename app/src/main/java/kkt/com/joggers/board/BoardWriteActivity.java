@@ -71,7 +71,10 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
 
         if (viewId == R.id.write_write) { //작성
             /* Storage에 이미지 업로드 */
-            FirebaseStorage.getInstance().getReference().child("board").child(String.valueOf(imageUri.hashCode())).putFile(imageUri)
+            FirebaseStorage.getInstance().getReference()
+                    .child("board")
+                    .child(String.valueOf(imageUri.hashCode()))
+                    .putFile(imageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -111,7 +114,6 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     /* 이미지 파일 로드 & Storage에 저장 */
     private void captureCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.setType("image/*");
         startActivityForResult(intent, REQUEST_TAKE_PHOTO);
     }
 
@@ -124,10 +126,10 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     public void cropImage(Uri imageUri) {
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
         cropIntent.setDataAndType(imageUri, "image/*");
-        //cropIntent.putExtra("outputX", 200); // crop한 이미지의 x축 크기, 결과물의 크기
-        //cropIntent.putExtra("outputY", 200); // crop한 이미지의 y축 크기
-        cropIntent.putExtra("aspectX", 1); // crop 박스의 x축 비율, 1&1이면 정사각형
-        cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
+        cropIntent.putExtra("outputX", 1000); // crop한 이미지의 x축 크기, 결과물의 크기
+        cropIntent.putExtra("outputY", 1000); // crop한 이미지의 y축 크기
+        //cropIntent.putExtra("aspectX", 1); // crop 박스의 x축 비율, 1&1이면 정사각형
+        //cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
         cropIntent.putExtra("scale", true);
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
     }
@@ -137,14 +139,15 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         switch (requestCode) {
             case REQUEST_TAKE_PHOTO:
             case REQUEST_TAKE_ALBUM:
-                if (resultCode == Activity.RESULT_OK)
-                    //cropImage(data.getData());
-                    imageUri = data.getData();
-                    write_img.setImageURI(imageUri);
+                if (resultCode == Activity.RESULT_OK) {
+                    cropImage(data.getData());
+                }
                 break;
             case REQUEST_IMAGE_CROP:
-                if (resultCode == Activity.RESULT_OK)
-                    //write_img.setImageURI(data.getData());
+                if (resultCode == Activity.RESULT_OK) {
+                    imageUri = data.getData();
+                    write_img.setImageURI(imageUri);
+                }
                 break;
         }
     }

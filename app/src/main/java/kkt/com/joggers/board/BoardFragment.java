@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 import kkt.com.joggers.R;
+import kkt.com.joggers.share.MarginItemDecoration;
 
 public class BoardFragment extends Fragment {
     private static final int REQ_WRITE = 0;
@@ -60,19 +61,7 @@ public class BoardFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_WRITE && resultCode == Activity.RESULT_OK)
-            refreshBoard();
-    }
-
-    /* 게시판 내용 새로고침 */
-    private void refreshBoard() {
-        /* 게시판 데이터 생성 */
-        // TODO RealTime DB로부터 board 테이블 레코드 가져와서 boards에 저장...
-        ArrayList<Board> boards = new ArrayList<>();
-        // TODO 아래는 샘플 데이터...
-
-        /* Adapter의 데이터 새로고침 */
-        adapter.setItems(boards);
-        rcView.getAdapter().notifyItemChanged(0);
+            rcView.getAdapter().notifyDataSetChanged();
     }
 
     /* Firebase RealTime Database으로부터

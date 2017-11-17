@@ -1,5 +1,6 @@
 package kkt.com.joggers;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -8,8 +9,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,7 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import kkt.com.joggers.board.BoardFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final String TAG = "joggers.MainActivity";
 
@@ -38,12 +39,15 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         /* 텍스트 뷰에 id 넣기*/
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            TextView textView_id = navigationView.getHeaderView(0).findViewById(R.id.id);
-            textView_id.setText(user.getDisplayName());
+            View headerView = navigationView.getHeaderView(0);
+            ((TextView) headerView.findViewById(R.id.id)).setText(user.getDisplayName());
+            // TODO '운동 N일차, 총 달린 거리'를 받아와서 텍스트뷰에 추가할 것!
+            ((TextView) headerView.findViewById(R.id.total_days)).setText("운동 N일차");
+            ((TextView) headerView.findViewById(R.id.total_km)).setText("총 N KM");
+            headerView.findViewById(R.id.logout).setOnClickListener(this);
         }
 
         getSupportFragmentManager().beginTransaction().replace(R.id.content_main, new MainFragment()).commit();
@@ -60,31 +64,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_sign_out) {
-            FirebaseAuth.getInstance().signOut();
-        } else if (id == R.id.action_exit) {
-            finish();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_main) {
+        if (id == R.id.nav_home) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content_main, new MainFragment())
@@ -95,6 +78,11 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.content_main, new BoardFragment(), TAG)
                     .addToBackStack(TAG)
                     .commit();
+        } else if (id == R.id.nav_friend) {
+        } else if (id == R.id.nav_tip) {
+        } else if (id == R.id.nav_setting) {
+        } else if (id == R.id.nav_exit) {
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -102,5 +90,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.logout) {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 
 }

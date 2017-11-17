@@ -68,7 +68,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
     }
 
     void addItem(Board board) {
-        boards.add(board);
+        boards.add(0, board);
     }
 
     void removeItem(Board board) {
