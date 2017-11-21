@@ -1,4 +1,4 @@
-package kkt.com.joggers;
+package kkt.com.joggers.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +23,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import kkt.com.joggers.R;
+import kkt.com.joggers.controller.UserProfileManager;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "Joggers.LoginActivity";
     private static final int RC_SIGN_IN = 0;
@@ -43,7 +46,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken("556000223823-48e6puei0ge0gvdem07lc79ijl77n96i.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
@@ -60,26 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // 이전 실행 시 로그인되어 있으면 바로 MainActivity를 실행한다
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null)
-            startMain(currentUser);
-    }
-
-    void makeToast(GoogleSignInAccount account) {
-        if (account != null) {
-            signInButton.setVisibility(Button.INVISIBLE); //로그인 버튼 숨김
-            Toast.makeText(this, "구글 계정으로 로그인 되었습니다", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "구글 계정 로그인을 실패하였습니다", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    void startMain(FirebaseUser user) {
-        String string = String.format("%s 님 환영합니다", user.getDisplayName());
-        Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
-
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        LoginActivity.this.startActivity(intent);
-        finish();
+            getUserProfile(currentUser);
     }
 
     /* == 로그인 처리 함수들 == */
@@ -88,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.sign_in_button) {
+            signInButton.setVisibility(Button.INVISIBLE); //로그인 버튼 숨김
             signIn();
         }
     }
@@ -103,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
@@ -113,13 +98,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            makeToast(account); //Signed in successfully, show authenticated UI.
+            Toast.makeText(this, "구글 계정으로 로그인 되었습니다", Toast.LENGTH_SHORT).show();
             firebaseAuthWithGoogle(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "구글 로그인 결과:실패 code=" + e.getStatusCode());
-            makeToast(null);
+            Toast.makeText(this, "구글 계정 로그인을 실패하였습니다", Toast.LENGTH_SHORT).show();
+            signInButton.setVisibility(Button.VISIBLE); //로그인 버튼 다시 보임
         }
     }
 
@@ -136,15 +122,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Firebase Auth 구글ID로 로그인 결과:성공");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            startMain(user);
+                            getUserProfile(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "Firebase Auth 구글ID로 로그인 결과:실패", task.getException());
-                            Toast.makeText(LoginActivity.this, "로그인 실패",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
+                            signInButton.setVisibility(Button.VISIBLE); //로그인 버튼 다시 보임
                         }
 
                     }
                 });
     }
+
+    /* 6 사용자 프로필 (Firebase UID, 출생년도, 성별, 체중, 신장 */
+    private void getUserProfile(FirebaseUser user) {
+        UserProfileManager manager = new UserProfileManager(this);
+        Intent intent;
+        if (!user.getUid().equals(manager.getId())) {
+            // 새로운 프로필을 작성하는 Activity 실행
+            intent = new Intent(this, UserProfileActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        } else {
+            // MainActivity 실행
+            intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        }
+        startActivity(intent);
+        finish();
+    }
+
 }

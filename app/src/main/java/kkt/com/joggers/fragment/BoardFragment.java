@@ -1,4 +1,4 @@
-package kkt.com.joggers.board;
+package kkt.com.joggers.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,7 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 import kkt.com.joggers.R;
-import kkt.com.joggers.share.MarginItemDecoration;
+import kkt.com.joggers.adapter.BoardAdapter;
+import kkt.com.joggers.activity.BoardWriteActivity;
+import kkt.com.joggers.model.Board;
+import kkt.com.joggers.adapter.MarginItemDecoration;
 
 public class BoardFragment extends Fragment {
     private static final int REQ_WRITE = 0;

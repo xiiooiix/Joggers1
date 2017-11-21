@@ -1,4 +1,4 @@
-package kkt.com.joggers.board;
+package kkt.com.joggers.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import kkt.com.joggers.R;
+import kkt.com.joggers.model.Board;
 
 public class BoardWriteActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int MY_PERMISSION_CAMERA = 1111;
@@ -70,6 +71,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         int viewId = v.getId();
 
         if (viewId == R.id.write_write) { //작성
+
             /* Storage에 이미지 업로드 */
             FirebaseStorage.getInstance().getReference()
                     .child("board")

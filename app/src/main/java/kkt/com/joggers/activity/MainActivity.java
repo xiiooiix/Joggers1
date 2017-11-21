@@ -1,4 +1,4 @@
-package kkt.com.joggers;
+package kkt.com.joggers.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +16,10 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import kkt.com.joggers.board.BoardFragment;
+import kkt.com.joggers.fragment.MainFragment;
+import kkt.com.joggers.R;
+import kkt.com.joggers.fragment.BoardFragment;
+import kkt.com.joggers.fragment.SettingFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -81,6 +84,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_friend) {
         } else if (id == R.id.nav_tip) {
         } else if (id == R.id.nav_setting) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_main, new SettingFragment(), TAG)
+                    .addToBackStack(TAG)
+                    .commit();
         } else if (id == R.id.nav_exit) {
             finish();
         }

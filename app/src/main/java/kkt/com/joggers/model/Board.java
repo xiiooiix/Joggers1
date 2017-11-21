@@ -1,6 +1,6 @@
-package kkt.com.joggers.board;
+package kkt.com.joggers.model;
 
-class Board {
+public class Board {
     private String id;
     private String time;
     private String imageUrl;
@@ -12,7 +12,7 @@ class Board {
     Board() {
     }
 
-    Board(String id, String time, String imageUrl, String content, boolean heart, int heartNum) {
+    public Board(String id, String time, String imageUrl, String content, boolean heart, int heartNum) {
         this.id = id;
         this.time = time;
         this.imageUrl = imageUrl;
@@ -21,7 +21,7 @@ class Board {
         this.heartNum = heartNum;
     }
 
-    String getId() {
+    public String getId() {
         return id;
     }
 
@@ -29,7 +29,7 @@ class Board {
         this.id = id;
     }
 
-    String getTime() {
+    public String getTime() {
         return time;
     }
 
@@ -37,7 +37,7 @@ class Board {
         this.time = time;
     }
 
-    String getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
@@ -45,7 +45,7 @@ class Board {
         this.imageUrl = imageUrl;
     }
 
-    String getContent() {
+    public String getContent() {
         return content;
     }
 
@@ -53,19 +53,19 @@ class Board {
         this.content = content;
     }
 
-    boolean isHeart() {
+    public boolean isHeart() {
         return heart;
     }
 
-    void setHeart(boolean heart) {
+    public void setHeart(boolean heart) {
         this.heart = heart;
     }
 
-    int getHeartNum() {
+    public int getHeartNum() {
         return heartNum;
     }
 
-    void setHeartNum(int heartNum) {
+    public void setHeartNum(int heartNum) {
         this.heartNum = heartNum;
     }
 }

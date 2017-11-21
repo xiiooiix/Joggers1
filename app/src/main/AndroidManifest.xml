@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kkt.com.joggers">
 
-    <!--카메라 권한 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera2"/>
+    <!-- 카메라 권한 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera2" />
 
     <application
         android:allowBackup="false"
@@ -17,23 +18,30 @@
         android:theme="@style/AppTheme">
 
         <!-- board -->
-        <activity android:name=".board.BoardWriteActivity" />
+        <activity
+            android:name=".activity.BoardWriteActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- main -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.UserProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

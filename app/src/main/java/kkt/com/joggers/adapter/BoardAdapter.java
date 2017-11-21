@@ -1,4 +1,4 @@
-package kkt.com.joggers.board;
+package kkt.com.joggers.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,12 +17,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.util.ArrayList;
 
 import kkt.com.joggers.R;
+import kkt.com.joggers.model.Board;
 
 public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> {
     private Context context;
     private ArrayList<Board> boards;
 
-    BoardAdapter(Context context, ArrayList<Board> boards) {
+    public BoardAdapter(Context context, ArrayList<Board> boards) {
         this.context = context;
         this.boards = boards;
     }
@@ -63,15 +64,11 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         return boards.size();
     }
 
-    void setItems(ArrayList<Board> boards) {
-        this.boards = boards;
-    }
-
-    void addItem(Board board) {
+    public void addItem(Board board) {
         boards.add(0, board);
     }
 
-    void removeItem(Board board) {
+    public void removeItem(Board board) {
         boards.remove(board);
     }
 
@@ -94,7 +91,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
     class OnClickBtn implements View.OnClickListener {
         private ViewHolder holder;
 
-        OnClickBtn(ViewHolder holder) {
+        private OnClickBtn(ViewHolder holder) {
             this.holder = holder;
         }
 
@@ -124,7 +121,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
     class OnSuccessGetImage implements OnSuccessListener<byte[]> {
         private ImageView b_img;
 
-        OnSuccessGetImage(ImageView b_img) {
+        private OnSuccessGetImage(ImageView b_img) {
             this.b_img = b_img;
         }
 

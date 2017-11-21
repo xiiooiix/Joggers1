@@ -1,4 +1,4 @@
-package kkt.com.joggers;
+package kkt.com.joggers.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;

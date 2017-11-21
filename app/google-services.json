@@ -15,15 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "556000223823-gpgkc1evquvh1hd0ki079q3323f18ai7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "kkt.com.joggers",
-            "certificate_hash": "a9f894ba0fe70419b01d6b99c845f34c9d64cb4e"
-          }
-        },
-        {
-          "client_id": "556000223823-osemb47o3e8m339d8lo4mgj549trgkk2.apps.googleusercontent.com",
+          "client_id": "556000223823-38opu8cpqjsljdr76fjespbdf4aaduhn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "kkt.com.joggers",
@@ -31,13 +23,13 @@
           }
         },
         {
-          "client_id": "556000223823-7bc0q9hbktv5du51ka0pip7on0f8k86a.apps.googleusercontent.com",
+          "client_id": "556000223823-48e6puei0ge0gvdem07lc79ijl77n96i.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDUJv2co6lza9s3LHjPgSOSbH2An-PEjjE"
+          "current_key": "AIzaSyBX5FKc_t1yqAwzjcUetpo4ejgJ_ge6z1A"
         }
       ],
       "services": {
@@ -48,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "556000223823-7bc0q9hbktv5du51ka0pip7on0f8k86a.apps.googleusercontent.com",
+              "client_id": "556000223823-48e6puei0ge0gvdem07lc79ijl77n96i.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
