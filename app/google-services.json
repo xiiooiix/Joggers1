@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "556000223823",
-    "firebase_url": "https://joggers1-c6f12.firebaseio.com",
-    "project_id": "joggers1-c6f12",
-    "storage_bucket": "joggers1-c6f12.appspot.com"
+    "project_number": "430177363180",
+    "firebase_url": "https://joggers1-6d965.firebaseio.com",
+    "project_id": "joggers1-6d965",
+    "storage_bucket": "joggers1-6d965.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:556000223823:android:406401ebcc943ba0",
+        "mobilesdk_app_id": "1:430177363180:android:406401ebcc943ba0",
         "android_client_info": {
           "package_name": "kkt.com.joggers"
         }
       },
       "oauth_client": [
         {
-          "client_id": "556000223823-38opu8cpqjsljdr76fjespbdf4aaduhn.apps.googleusercontent.com",
+          "client_id": "430177363180-apmtjj9oneg1tgehmvac06kocou08ski.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "kkt.com.joggers",
@@ -23,13 +23,13 @@
           }
         },
         {
-          "client_id": "556000223823-48e6puei0ge0gvdem07lc79ijl77n96i.apps.googleusercontent.com",
+          "client_id": "430177363180-icb00m428n4h3pvuc6c96t3kppedahmr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBX5FKc_t1yqAwzjcUetpo4ejgJ_ge6z1A"
+          "current_key": "AIzaSyAE-rPb4aycwHtb9DEnPMcXr7bKIv5NVKo"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "556000223823-48e6puei0ge0gvdem07lc79ijl77n96i.apps.googleusercontent.com",
+              "client_id": "430177363180-icb00m428n4h3pvuc6c96t3kppedahmr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -1,14 +1,40 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context="kkt.com.joggers.fragment.MainFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="36dp"
-        android:layout_height="match_parent"
-        android:text="gelnfldnfldfddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" />
+    <android.support.v7.widget.CardView
+        android:id="@+id/running"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="@dimen/main_cardview_layout_margin_top"
+        android:layout_marginBottom="@dimen/main_cardview_layout_margin"
+        android:layout_marginStart="@dimen/main_cardview_layout_margin"
+        android:layout_marginEnd="@dimen/main_cardview_layout_margin"
+        cardview:cardCornerRadius="@dimen/main_cardview_cardCornerRadius"
+        cardview:cardElevation="@dimen/main_cardview_cardElevation"
+        cardview:cardBackgroundColor="@color/main_cardview_default" />
 
-</FrameLayout>
+    <android.support.v7.widget.CardView
+        android:id="@+id/today_record"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="@dimen/main_cardview_layout_margin"
+        cardview:cardCornerRadius="@dimen/main_cardview_cardCornerRadius"
+        cardview:cardElevation="@dimen/main_cardview_cardElevation"
+        cardview:cardBackgroundColor="@color/main_cardview_default" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/daily_record"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="@dimen/main_cardview_layout_margin"
+        cardview:cardCornerRadius="@dimen/main_cardview_cardCornerRadius"
+        cardview:cardElevation="@dimen/main_cardview_cardElevation"
+        cardview:cardBackgroundColor="@color/main_cardview_default" />
+
+</LinearLayout>

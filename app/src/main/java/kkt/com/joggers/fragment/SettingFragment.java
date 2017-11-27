@@ -10,7 +10,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import kkt.com.joggers.R;
-import kkt.com.joggers.controller.SettingManager;
+import kkt.com.joggers.service.SettingManager;
 
 public class SettingFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
     private SettingManager manager;

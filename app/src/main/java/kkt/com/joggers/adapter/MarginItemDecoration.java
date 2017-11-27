@@ -15,8 +15,6 @@ public class MarginItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         outRect.bottom = mVerticalSpaceHeight;
         outRect.top = mVerticalSpaceHeight;
-        outRect.left = mVerticalSpaceHeight;
-        outRect.right = mVerticalSpaceHeight;
     }
 
 }
