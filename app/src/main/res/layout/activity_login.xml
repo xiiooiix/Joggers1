@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context="kkt.com.joggers.LoginActivity">
+    android:background="@android:color/holo_blue_bright"
+    tools:context="kkt.com.joggers.activity.LoginActivity">
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"

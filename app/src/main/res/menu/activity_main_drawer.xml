@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Fucking">
-     <menu>
-         <item
-            android:id="@+id/nav_main"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Main" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_board"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Board" />
-     </menu>
-    </item>
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="홈" />
 
-
-
-    <item android:title="Communicate">
+    <item android:title="커뮤니티">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_board"
+                android:icon="@drawable/ic_forum_black_24dp"
+                android:title="자유게시판" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_friend"
+                android:icon="@drawable/ic_people_black_24dp"
+                android:title="친구" />
+            <item
+                android:id="@+id/nav_tip"
+                android:icon="@drawable/ic_star_border_black_24dp"
+                android:title="팁" />
         </menu>
     </item>
 
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_setting"
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="설정" />
+            <item
+                android:id="@+id/nav_exit"
+                android:icon="@drawable/ic_exit_black_24dp"
+                android:title="종료" />
+        </menu>
+    </item>
 </menu>

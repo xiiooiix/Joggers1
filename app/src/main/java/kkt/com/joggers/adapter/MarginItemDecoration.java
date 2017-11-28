@@ -1,12 +1,12 @@
-package kkt.com.joggers;
+package kkt.com.joggers.adapter;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 
-class MarginItemDecoration extends RecyclerView.ItemDecoration {
+public class MarginItemDecoration extends RecyclerView.ItemDecoration {
     private int mVerticalSpaceHeight;
 
-    MarginItemDecoration(int height) {
+    public MarginItemDecoration(int height) {
         this.mVerticalSpaceHeight = height;
     }
 

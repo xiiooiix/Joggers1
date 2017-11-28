@@ -1,0 +1,57 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <ImageView
+        android:background="@drawable/icon_image"
+        android:id="@+id/write_image"
+        android:layout_height="100dp"
+        android:layout_width="100dp" />
+
+    <Button
+        android:background="@drawable/ic_camera_alt_black_24dp"
+        android:id="@+id/write_camera"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        android:layout_toEndOf="@+id/write_image"
+        android:layout_width="20dp" />
+
+    <Button
+        android:background="@drawable/ic_photo_library_black_24dp"
+        android:id="@+id/write_album"
+        android:layout_below="@id/write_camera"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        android:layout_toEndOf="@+id/write_image"
+        android:layout_width="20dp" />
+
+    <EditText
+        android:id="@+id/write_content"
+        android:hint="content"
+        android:layout_below="@+id/write_image"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:textColorHint="@color/colorPrimary" />
+
+    <Button
+        android:id="@+id/write_write"
+        android:layout_below="@+id/write_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/write_cancel"
+        android:layout_width="wrap_content"
+        android:text="작성"
+        android:textSize="10pt" />
+
+    <Button
+        android:id="@+id/write_cancel"
+        android:layout_alignEnd="@+id/write_content"
+        android:layout_below="@+id/write_content"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="취소"
+        android:textSize="10pt" />
+
+</RelativeLayout>
