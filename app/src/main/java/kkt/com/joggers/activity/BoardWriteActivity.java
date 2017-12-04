@@ -2,6 +2,7 @@ package kkt.com.joggers.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -71,34 +73,18 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         int viewId = v.getId();
 
         if (viewId == R.id.write_write) { //작성
-
-            /* Storage에 이미지 업로드 */
-            FirebaseStorage.getInstance().getReference()
-                    .child("board")
-                    .child(String.valueOf(imageUri.hashCode()))
-                    .putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // 작성한 글을 RealTime DB의 Board 테이블에 추가한다
-                            /* 작성자, 작성시간 */
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            if (user == null)
-                                return;
-                            String time = SimpleDateFormat.getDateTimeInstance().format(new Date());
-                            Uri imageUrl = taskSnapshot.getDownloadUrl();
-
-                            /* 게시글 data 생성 & INSERT */
-                            Board board = new Board(user.getDisplayName(), time, String.valueOf(imageUrl), String.valueOf(write_content.getText()), false, 0);
-                            FirebaseDatabase.getInstance().getReference().child("board").push().setValue(board);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(BoardWriteActivity.this, "작성 실패", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            if (imageUri != null)
+                uploadImage();
+            else {
+                // 작성한 글을 RealTime DB의 Board 테이블에 추가한다
+                /* 작성자, 작성시간 */
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null)
+                    return;
+                String time = SimpleDateFormat.getDateTimeInstance().format(new Date());
+                Board board = new Board(user.getDisplayName(), time, null, String.valueOf(write_content.getText()), false, 0);
+                writeBoard(board);
+            }
 
             /* MainActivity로 */
             setResult(RESULT_OK);
@@ -110,6 +96,8 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
             captureCamera();
         } else if (viewId == R.id.write_album) { //앨범에서 찾아서 업로드
             getAlbum();
+        } else if (viewId == R.id.remove_img) {
+            removeImage();
         }
     }
 
@@ -125,7 +113,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         startActivityForResult(intent, REQUEST_TAKE_ALBUM);
     }
 
-    public void cropImage(Uri imageUri) {
+    private void cropImage(Uri imageUri) {
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
         cropIntent.setDataAndType(imageUri, "image/*");
         cropIntent.putExtra("outputX", 1000); // crop한 이미지의 x축 크기, 결과물의 크기
@@ -134,6 +122,11 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         //cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
         cropIntent.putExtra("scale", true);
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
+    }
+
+    private void removeImage() {
+        imageUri = null;
+        write_img.setImageDrawable(getDrawable(R.drawable.icon_image));
     }
 
     @Override
@@ -152,6 +145,43 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
         }
+    }
+
+    /* 이미지 파일 업로드 */
+    private void uploadImage() {
+        /* Storage에 이미지 업로드 */
+        FirebaseStorage.getInstance().getReference()
+                .child("board")
+                .child(String.valueOf(imageUri.hashCode()))
+                .putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // 작성한 글을 RealTime DB의 Board 테이블에 추가한다
+                        /* 작성자, 작성시간 */
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user == null)
+                            return;
+                        String time = SimpleDateFormat.getDateTimeInstance().format(new Date());
+                        Uri imageUrl = taskSnapshot.getDownloadUrl();
+                        Board board = new Board(user.getDisplayName(), time, String.valueOf(imageUrl), String.valueOf(write_content.getText()), false, 0);
+                        writeBoard(board);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(BoardWriteActivity.this, "작성 실패", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /* 작성한 게시글을 서버에 저장 */
+    private void writeBoard(Board board) {
+        /* 게시글 data 생성 & INSERT */
+        FirebaseDatabase.getInstance().getReference().child("board").push().setValue(board);
+        if (imageUri != null)
+            new File(imageUri.getPath()).delete();
     }
 
     /* 권한 설정 */

@@ -52,8 +52,7 @@ public class BoardFragment extends Fragment {
         });
 
         /* 게시판 데이터 생성 */
-        FirebaseDatabase.getInstance().getReference()
-                .child("board")
+        FirebaseDatabase.getInstance().getReference("board")
                 .orderByChild("time")
                 .addChildEventListener(new ChildEventAdapter());
 

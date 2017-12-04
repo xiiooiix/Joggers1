@@ -53,9 +53,11 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         holder.b_heartNum.setText(String.valueOf(board.getHeartNum()));
 
         // image_url로 FirebaseStorage 에 저장된 이미지를 가져온다
-        FirebaseStorage.getInstance().getReferenceFromUrl(board.getImageUrl())
-                .getBytes(Long.MAX_VALUE)
-                .addOnSuccessListener(new OnSuccessGetImage(holder.b_img));
+        if (board.getImageUrl() != null) {
+            FirebaseStorage.getInstance().getReferenceFromUrl(board.getImageUrl())
+                    .getBytes(Long.MAX_VALUE)
+                    .addOnSuccessListener(new OnSuccessGetImage(holder.b_img));
+        }
         holder.b_btn.setBackground(context.getResources().getDrawable(R.drawable.heart_empty));
     }
 

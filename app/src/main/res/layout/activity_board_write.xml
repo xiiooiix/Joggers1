@@ -26,6 +26,15 @@
         android:layout_toEndOf="@+id/write_image"
         android:layout_width="20dp" />
 
+    <Button
+        android:background="@drawable/ic_close_black_48dp"
+        android:id="@+id/remove_img"
+        android:layout_below="@id/write_album"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        android:layout_toEndOf="@+id/write_image"
+        android:layout_width="20dp" />
+
     <EditText
         android:id="@+id/write_content"
         android:hint="content"

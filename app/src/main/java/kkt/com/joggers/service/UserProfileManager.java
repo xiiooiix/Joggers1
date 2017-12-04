@@ -1,4 +1,4 @@
-package kkt.com.joggers.controller;
+package kkt.com.joggers.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
