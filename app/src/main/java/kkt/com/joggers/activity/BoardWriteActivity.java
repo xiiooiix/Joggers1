@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -35,11 +36,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import kkt.com.joggers.R;
 import kkt.com.joggers.fragment.BoardFragment;
@@ -59,6 +63,9 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     private int count=0;
     private Board board;
     private Comment comment;
+    private String re_content;
+    private Uri re_img;
+    private int re_num;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +82,19 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.write_camera).setOnClickListener(this);
         findViewById(R.id.write_album).setOnClickListener(this);
 
+
+        re_num=getIntent().getIntExtra("num",-1);
+
+        if(re_num != -1){
+            Log.i("ASDF" ,"ㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱ " + re_img);
+            re_img= Uri.parse(getIntent().getStringExtra("img"));
+            re_content=getIntent().getStringExtra("content");
+            write_content.setText(re_content);
+
+
+            write_img.setImageURI(re_img);
+        }
+
         /* 권한설정 */
         checkPermission();
     }
@@ -86,12 +106,10 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         int viewId = v.getId();
         Log.d("ASD","oncli1231213   따. ");
 
-        if (viewId == R.id.write_write) { //작성
+        if (viewId == R.id.write_write && re_num == -1) { //작성
             Log.d("ASD","write_write 들어왔따.1 "+ FirebaseStorage.getInstance().getReference().child("board"));
             Log.d("ASD","write_write 들어왔따.2 "+ imageUri);
             Log.d("ASD","write_write 들어왔따.3 "+ FirebaseStorage.getInstance().getReference().child("board").child(String.valueOf(imageUri.hashCode())));
-
-
 
 
             /* Storage에 이미지 업로드 */
@@ -125,25 +143,26 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                                             if(dataSnapshot.getValue() == null) {
                                                 Log.d("ASD", "aa = 이건 처음일때");
                                             }
+
                                             else{
                                                 for (DataSnapshot child: dataSnapshot.getChildren()) {
                                                     Log.d("ASD", "aa = 이건 처음이 아닐닐때");
                                                    count = child.child("num").getValue(Integer.class) + 1;
                                                 }
                                             }
-
-                                            /* 게시글 data 생성 & INSERT */
-                                            List<String> s = new ArrayList<String>();
-                                            s.add(user.getDisplayName());
-                                            s.add("123");
-                                            s.add("ddds");
-                                            board = new Board(user.getDisplayName(), time, String.valueOf(imageUrl), String.valueOf(write_content.getText()), false, 0, count);
+                                             /* 게시글 data 생성 & INSERT */
+                                            board = new Board(user.getDisplayName(), time, String.valueOf(imageUrl), String.valueOf(write_content.getText()), 0, count);
+                                            //board = new Board("df", time, String.valueOf(imageUrl), String.valueOf(write_content.getText()), 0, count);
                                             comment = new Comment(0, "작성자", "작성자", time);
-
+                                            Map<String, String> map = new HashMap<>();
+                                            map.put("0", user.getDisplayName());
+                                            //map.put("0","df");
+                                            //map.put("1", "dddd");
+                                            //map.put("2", "Cvd");
                                             FirebaseDatabase.getInstance().getReference().child("board").push().setValue(board);
                                             FirebaseDatabase.getInstance().getReference().child("comment").child(Integer.toString(count)).push().setValue(comment);
-                                            FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).setValue(s);
-                                            //FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).setValue("ASD");
+                                            FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).setValue(map);
+
                                         }
 
                                         @Override
@@ -183,6 +202,70 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.write_album) { //앨범에서 찾아서 업로드
             getAlbum();
         }
+
+        /* 수정일때 */
+        else if(viewId == R.id.write_write && re_num != -1){
+            Log.i("ASDF", "크크크킄하하하하하하 " + re_num);
+
+
+            /* 그림 추가할 경우 */
+            FirebaseStorage.getInstance().getReference()
+                    .child("board")
+                    .child(String.valueOf(imageUri.hashCode()))
+                    .putFile(imageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.d("ASD","sucess????. ");
+                            // 작성한 글을 RealTime DB의 Board 테이블에 추가한다
+                            /* 작성자, 작성시간 */
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if (user == null) {
+                                Log.d("ASD","user가 null");
+                                return;
+                            }
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("ASD","실패~~~ "+123);
+                            Toast.makeText(BoardWriteActivity.this, "작성 실패", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+            Query lastQuery = FirebaseDatabase.getInstance().getReference().child("board");
+            lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.getValue() == null) {
+                        Log.d("ASDF", "ㄱㄱㄱㄱㄱㄱㄱaa = 이건 처음일때");
+                    }
+
+                    else{
+                        for (DataSnapshot child: dataSnapshot.getChildren()) {
+                            Log.d("ASDF", "ㄱㄱㄱㄱ -- 들어옵니다. ㄱㄱ" + child.child("num").getValue());
+                            //int nn = (int) child.child("num").getValue();
+
+                            if(re_num == child.child("num").getValue(Integer.class)){
+                                Log.d("ASDF", "ㄱㄱㄱㄱㄱ = 이게 되나요//??" + child.child("content").getValue() + " :zzz  ");
+
+                                String ss= write_content.getText().toString();
+                                child.child("content").getRef().setValue(ss);
+                            }
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
+
     }
 
     /* 이미지 파일 로드 & Storage에 저장 */

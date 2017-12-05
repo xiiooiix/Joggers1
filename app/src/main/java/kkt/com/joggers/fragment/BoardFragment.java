@@ -11,18 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import kkt.com.joggers.R;
 import kkt.com.joggers.activity.BoardWriteActivity;
@@ -34,15 +28,9 @@ public class BoardFragment extends Fragment {
     private static final int REQ_WRITE = 0;
     private RecyclerView rcView;
     private BoardAdapter adapter;
-    private int num=0;
-    private FirebaseUser currentUser;
-    private String id;
-    private boolean a=false;
-
+    private static final String TAG = "joggers.BoardFragment";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        currentUser =  FirebaseAuth.getInstance().getCurrentUser();
-        id = currentUser.getDisplayName();
 
         /* 레이아웃 설정 */
         View view = inflater.inflate(R.layout.fragment_board, container, false);
@@ -51,7 +39,7 @@ public class BoardFragment extends Fragment {
         rcView.addItemDecoration(new MarginItemDecoration(20));
 
         /* 게시판 리스트 생성 */
-        adapter = new BoardAdapter(getContext(), new ArrayList<Board>());
+        adapter = new BoardAdapter(getContext(), new ArrayList<Board>() ,false);
         rcView.setAdapter(adapter);
 
         /* 글쓰기 버튼 */
@@ -63,6 +51,20 @@ public class BoardFragment extends Fragment {
                 startActivityForResult(intent, REQ_WRITE);
             }
         });
+
+        /* 마이 보드 버튼 */
+        view.findViewById(R.id.btn_myBoard).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("ASD", "마이보드 ㄱㄱ");
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content_main, new MyBoardFragment(), TAG)
+                        .addToBackStack(TAG)
+                        .commit();
+            }
+        });
+
 
         /* 게시판 데이터 생성 */
         FirebaseDatabase.getInstance().getReference()
@@ -89,51 +91,9 @@ public class BoardFragment extends Fragment {
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.i("ASD", "onChildAdded3  + " + dataSnapshot.getValue(Board.class));
-            Board b= dataSnapshot.getValue(Board.class);
-            //b.set 사진
+            Log.i("ASD", "onChildAdd ㄱㄱ");
             adapter.addItem(dataSnapshot.getValue(Board.class));
             adapter.notifyDataSetChanged();
-
-
-            //Log.i("ASD", "넌 뭐냐?  "+FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(num)).child("0").);
-           // if(id.equals(FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(num)).child("0").getKey()))
-            //    Log.i("ASD","내 게시물이다. + "+num);
-
-
-
-
-            Query query = FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(num));
-            Log.i("ASD","넘값 뭐냐?? . "+num);
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d("ASD", "흠;;; " + dataSnapshot.getValue());
-                    List<String> s= (ArrayList<String>)dataSnapshot.getValue();
-
-                    if(id.equals(s.get(0)))
-                        Log.i("ASD","내 게시물이다. + "+dataSnapshot.getKey() +"   "+ s.size());
-
-                    for(int i=1; i<s.size(); i++){
-                        if(id.equals(s.get(i))){
-                            a= true;
-                            //adapter.//여기서부터 하면된다 뭘하냐면 여긴 좋아요 중에 내 아이디가 있다면 빨간하트로!!!
-
-                        }
-
-                    }
-
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            num++;
-            Log.i("ASD","넘값 증가합니다. "+num);
         }
 
         @Override
@@ -145,8 +105,6 @@ public class BoardFragment extends Fragment {
             Log.i("ASD", "onChildRemoved ㄱㄱ");
             adapter.removeItem(dataSnapshot.getValue(Board.class));
             adapter.notifyDataSetChanged();
-
-            num--;
         }
 
         @Override
