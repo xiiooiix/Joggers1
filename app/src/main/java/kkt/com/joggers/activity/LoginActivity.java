@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import kkt.com.joggers.R;
+import kkt.com.joggers.activity.MainActivity;
+import kkt.com.joggers.activity.UserProfileActivity;
 import kkt.com.joggers.controller.UserProfileManager;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {

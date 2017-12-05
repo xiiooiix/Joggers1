@@ -36,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -289,9 +290,12 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         //cropIntent.putExtra("aspectX", 1); // crop 박스의 x축 비율, 1&1이면 정사각형
         //cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
         cropIntent.putExtra("scale", true);
-        Log.d("ASD","사진자르기에서 이미지 저장: "+imageUri);
-        write_img.setImageURI(imageUri);	//crop이미지 저장//영재
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
+    }
+
+    private void removeImage() {
+        imageUri = null;
+        write_img.setImageDrawable(getDrawable(R.drawable.icon_image));
     }
 
     @Override
@@ -300,18 +304,24 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
             case REQUEST_TAKE_PHOTO:
             case REQUEST_TAKE_ALBUM:
                 if (resultCode == Activity.RESULT_OK) {
-                    imageUri = data.getData();
-                    cropImage(imageUri);
+                    cropImage(data.getData());
                 }
                 break;
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
-                    Log.d("ASD","사진자르기에서 이미지 저장:123 ");
-                   // write_img.setImageURI(data.getData());	//crop이미지 저장//영재
-                    Log.d("ASD","사진자르기에서 이미지 저장:111111 ");
+                    imageUri = data.getData();
+                    write_img.setImageURI(imageUri);
                 }
                 break;
         }
+    }
+
+    /* 작성한 게시글을 서버에 저장 */
+    private void writeBoard(Board board) {
+        /* 게시글 data 생성 & INSERT */
+        FirebaseDatabase.getInstance().getReference().child("board").push().setValue(board);
+        if (imageUri != null)
+            new File(imageUri.getPath()).delete();
     }
 
     /* 권한 설정 */
