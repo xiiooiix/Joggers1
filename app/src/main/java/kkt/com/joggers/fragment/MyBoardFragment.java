@@ -48,8 +48,6 @@ public class MyBoardFragment extends Fragment {
         /* 게시판 리스트 생성 */
         adapter = new BoardAdapter(getContext(), new ArrayList<Board>(), true);
         rcView.setAdapter(adapter);
-        // Inflate the layout for this fragment
-
 
         FirebaseDatabase.getInstance().getReference()
                 .child("board")

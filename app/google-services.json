@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "430177363180-8nj22j58tfqcqeikdhhm1itgbb13pgtt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kkt.com.joggers",
+            "certificate_hash": "a9f894ba0fe70419b01d6b99c845f34c9d64cb4e"
+          }
+        },
+        {
+          "client_id": "430177363180-cijgrl4apt5n5o8hjb9lvjv1ti09rt50.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kkt.com.joggers",
+            "certificate_hash": "f915d5ad8c5d28ed8d8de9c287a6513a95bcb695"
+          }
+        },
+        {
           "client_id": "430177363180-apmtjj9oneg1tgehmvac06kocou08ski.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

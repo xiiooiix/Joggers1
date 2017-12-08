@@ -7,9 +7,10 @@ public class Comment {
     String content;
 
     // DataSnapshot.getValue(Comment.class)를 위한 기본생성자
-    public Comment(){}
+    public Comment() {
+    }
 
-    public Comment(int num, String id, String content, String time){
+    public Comment(int num, String id, String content, String time) {
         this.num = num;
         this.id = id;
         this.content = content;

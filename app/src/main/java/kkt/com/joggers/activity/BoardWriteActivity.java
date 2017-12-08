@@ -5,12 +5,12 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -37,17 +37,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import kkt.com.joggers.R;
-import kkt.com.joggers.fragment.BoardFragment;
 import kkt.com.joggers.model.Board;
 import kkt.com.joggers.model.Comment;
 
@@ -61,11 +56,10 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     private Uri imageUri;
     private ImageView write_img;
     private EditText write_content;
-    private int count=0;
+    private int count = 0;
     private Board board;
     private Comment comment;
-    private String re_content;
-    private Uri re_img;
+    private String re_imageUrl;
     private int re_num;
 
     @Override
@@ -83,17 +77,13 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.write_camera).setOnClickListener(this);
         findViewById(R.id.write_album).setOnClickListener(this);
 
-
-        re_num=getIntent().getIntExtra("num",-1);
-
-        if(re_num != -1){
-            Log.i("ASDF" ,"ㄱㄱㄱㄱㄱㄱㄱㄱㄱㄱ " + re_img);
-            re_img= Uri.parse(getIntent().getStringExtra("img"));
-            re_content=getIntent().getStringExtra("content");
-            write_content.setText(re_content);
-
-
-            write_img.setImageURI(re_img);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            re_num = bundle.getInt("num");
+            if (re_num != -1) {
+                write_content.setText(bundle.getString("content"));
+                write_img.setImageBitmap((Bitmap) bundle.getParcelable("img"));
+            }
         }
 
         /* 권한설정 */
@@ -103,16 +93,9 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     /* Activity 내의 모든 OnClickEvent를 처리한다 */
     @Override
     public void onClick(View v) {
-        Log.d("ASD","onclick 들어왔따. ");
         int viewId = v.getId();
-        Log.d("ASD","oncli1231213   따. ");
 
         if (viewId == R.id.write_write && re_num == -1) { //작성
-            Log.d("ASD","write_write 들어왔따.1 "+ FirebaseStorage.getInstance().getReference().child("board"));
-            Log.d("ASD","write_write 들어왔따.2 "+ imageUri);
-            Log.d("ASD","write_write 들어왔따.3 "+ FirebaseStorage.getInstance().getReference().child("board").child(String.valueOf(imageUri.hashCode())));
-
-
             /* Storage에 이미지 업로드 */
             FirebaseStorage.getInstance().getReference()
                     .child("board")
@@ -121,12 +104,12 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Log.d("ASD","sucess????. ");
+                            Log.d("ASD", "sucess????. ");
                             // 작성한 글을 RealTime DB의 Board 테이블에 추가한다
                             /* 작성자, 작성시간 */
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             if (user == null) {
-                                Log.d("ASD","user가 null");
+                                Log.d("ASD", "user가 null");
                                 return;
                             }
 
@@ -141,14 +124,11 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                                     lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if(dataSnapshot.getValue() == null) {
+                                            if (dataSnapshot.getValue() == null) {
                                                 Log.d("ASD", "aa = 이건 처음일때");
-                                            }
-
-                                            else{
-                                                for (DataSnapshot child: dataSnapshot.getChildren()) {
-                                                    Log.d("ASD", "aa = 이건 처음이 아닐닐때");
-                                                   count = child.child("num").getValue(Integer.class) + 1;
+                                            } else {
+                                                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                                    count = child.child("num").getValue(Integer.class) + 1;
                                                 }
                                             }
                                              /* 게시글 data 생성 & INSERT */
@@ -174,7 +154,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
 
                                     //mutableData.child("board/count").setValue(board);
                                     //mutableData.child("comment/count").setValue("123");
-                                    return  Transaction.success(mutableData);
+                                    return Transaction.success(mutableData);
                                 }
 
                                 @Override
@@ -187,11 +167,11 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d("ASD","실패~~~ "+123);
+                            Log.d("ASD", "실패~~~ " + 123);
                             Toast.makeText(BoardWriteActivity.this, "작성 실패", Toast.LENGTH_SHORT).show();
                         }
                     });
-            Log.d("ASD","먼가 이상해 "+123);
+            Log.d("ASD", "먼가 이상해 " + 123);
             /* MainActivity로 */
             setResult(RESULT_OK);
             finish();
@@ -205,7 +185,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         }
 
         /* 수정일때 */
-        else if(viewId == R.id.write_write && re_num != -1){
+        else if (viewId == R.id.write_write) {
             Log.i("ASDF", "크크크킄하하하하하하 " + re_num);
 
 
@@ -217,12 +197,12 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Log.d("ASD","sucess????. ");
+                            Log.d("ASD", "sucess????. ");
                             // 작성한 글을 RealTime DB의 Board 테이블에 추가한다
                             /* 작성자, 작성시간 */
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             if (user == null) {
-                                Log.d("ASD","user가 null");
+                                Log.d("ASD", "user가 null");
                                 return;
                             }
 
@@ -231,7 +211,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d("ASD","실패~~~ "+123);
+                            Log.d("ASD", "실패~~~ " + 123);
                             Toast.makeText(BoardWriteActivity.this, "작성 실패", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -241,19 +221,17 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
             lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.getValue() == null) {
+                    if (dataSnapshot.getValue() == null) {
                         Log.d("ASDF", "ㄱㄱㄱㄱㄱㄱㄱaa = 이건 처음일때");
-                    }
-
-                    else{
-                        for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    } else {
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
                             Log.d("ASDF", "ㄱㄱㄱㄱ -- 들어옵니다. ㄱㄱ" + child.child("num").getValue());
                             //int nn = (int) child.child("num").getValue();
 
-                            if(re_num == child.child("num").getValue(Integer.class)){
+                            if (re_num == child.child("num").getValue(Integer.class)) {
                                 Log.d("ASDF", "ㄱㄱㄱㄱㄱ = 이게 되나요//??" + child.child("content").getValue() + " :zzz  ");
 
-                                String ss= write_content.getText().toString();
+                                String ss = write_content.getText().toString();
                                 child.child("content").getRef().setValue(ss);
                             }
 
@@ -282,7 +260,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void cropImage(Uri imageUri) {
-        Log.d("ASD","사진자르기 시작: "+imageUri);
+        Log.d("ASD", "사진자르기 시작: " + imageUri);
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
         cropIntent.setDataAndType(imageUri, "image/*");
         cropIntent.putExtra("outputX", 1000); // crop한 이미지의 x축 크기, 결과물의 크기

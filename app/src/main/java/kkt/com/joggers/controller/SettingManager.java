@@ -3,7 +3,11 @@ package kkt.com.joggers.controller;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 public class SettingManager {
+    private static final String TOPIC = "advice";
+
     private SharedPreferences preferences;
     private boolean stopOnCalling; //전화 수신 시 운동중지
     private boolean vibration; //진동 사용
@@ -49,6 +53,10 @@ public class SettingManager {
 
     public void setNotification(boolean notification) {
         this.notification = notification;
+        if (notification)
+            FirebaseMessaging.getInstance().subscribeToTopic(TOPIC);
+        else
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC);
     }
 
     public boolean isMusicAutoPlay() {

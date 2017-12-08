@@ -1,18 +1,18 @@
 package kkt.com.joggers.model;
 
-import java.util.List;
-
 public class Board {
     private String id;
     private String time;
     private String imageUrl;
     private String content;
     private int heartNum;
-    private int num=0;
+    private int num = 0;
     private String comment;
     private boolean heart;
+
     // DataSnapshot.getValue(Board.class)를 위한 기본생성자
-    Board() {}
+    Board() {
+    }
 
     public Board(String id, String time, String imageUrl, String content, int heartNum, int num) {
         this.id = id;
@@ -21,7 +21,7 @@ public class Board {
         this.content = content;
         this.heartNum = heartNum;
         this.num = num;
-        this.heart =false;
+        this.heart = false;
     }
 
     public boolean isHeart() {

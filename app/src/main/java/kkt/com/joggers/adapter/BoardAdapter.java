@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,14 +68,9 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         holder.b_btn.setOnClickListener(new OnClickBtn(holder)); //'좋아요' 버튼 onClickListener 설정
         holder.b_del.setOnClickListener(new OnClickDel(holder)); //'삭제' 버튼 onClickListener 설정
         holder.b_re.setOnClickListener(new OnClickRe(holder)); //'수정' 버튼 onClickListener 설정
-
-
-
-
         holder.b_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("ASD", "comment 클릭 ㅋㅋ");
                 Intent intent = new Intent(parent.getContext(), CommentActivity.class);
                 intent.putExtra("num", holder.getB_num());
                 parent.getContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -99,8 +95,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
                 .getBytes(Long.MAX_VALUE)
                 .addOnSuccessListener(new OnSuccessGetImage(holder.b_img));
 
-
-        currentUser =  FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         id = currentUser.getDisplayName();
 
         final ViewHolder h = holder;
@@ -110,16 +105,15 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("ASD", "흠;;; " + dataSnapshot.getValue());
 
-                if(dataSnapshot.getValue() != null) {
+                if (dataSnapshot.getValue() != null) {
 
                     List<String> s = (ArrayList<String>) dataSnapshot.getValue();
                     Log.i("ASDG", "sAAA : " + s + "heart:  " + dataSnapshot.getValue());
 
-                    h.b_heartNum.setText(Integer.toString(s.size() - 1));
+                    h.b_heartNum.setText(String.valueOf(s.size() - 1));
 
                     if (id.equals(s.get(0))) {
                         Log.i("ASD", "내 게시물이다. + " + dataSnapshot.getKey() + "   " + s.size());
-
                     }
 
                     for (int i = 1; i < s.size(); i++) {
@@ -132,13 +126,13 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
                 }
 
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
 
-        if(board.isHeart() == false) {
-            Log.i("ASD", "좋아요에 내가 없다!!");
+        if (!board.isHeart()) { // 좋아요에 내가 없다!!
             holder.b_btn.setBackground(context.getResources().getDrawable(R.drawable.heart_empty));
         }
     }
@@ -157,7 +151,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView b_id, b_time, b_content, b_heartNum ,b_comment;
+        private TextView b_id, b_time, b_content, b_heartNum, b_comment;
         private ImageView b_img;
         private Button b_btn, b_del, b_re;
         private int b_num;
@@ -172,50 +166,18 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             b_img = itemVivew.findViewById(R.id.board_imageView);
             b_btn = itemVivew.findViewById(R.id.board_heart);
             b_comment = itemVivew.findViewById(R.id.board_comment);
-            b_del= itemVivew.findViewById(R.id.board_delete);
+            b_del = itemVivew.findViewById(R.id.board_delete);
             b_re = itemVivew.findViewById(R.id.board_revise);
 
-
-            if(myBoard == true){
+            if (myBoard == true) {
                 b_del.setVisibility(View.VISIBLE);
                 b_re.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 b_del.setVisibility(View.INVISIBLE);
                 b_re.setVisibility(View.INVISIBLE);
             }
-            /*
-            Log.i("ASDF", "a 가 머냐 + " + b_num);
-            Query query = FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(b_num));
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d("ASDF","a: "+a +  " 흠;;; " + dataSnapshot.getValue());
-
-                    List<String> s= (ArrayList<String>)dataSnapshot.getValue();
-                    Log.i("ASDF", "s : " + s + " ㅇㅇ: " +dataSnapshot.getKey());
-
-                   if(id.equals(s.get(0))) {
-                        Log.i("ASDF", "내 게시물이다. + " + a + "   " + s.size()+ "  dd: " +b_content.getText());
-                       b_del.setVisibility(View.VISIBLE);
-                       b_re.setVisibility(View.VISIBLE);
-                   }
-
-                    else {
-                       Log.i("ASDF", "내 게시물이 아니다. + " + a + "   " + s.size());
-                       b_del.setVisibility(View.INVISIBLE);
-                       b_re.setVisibility(View.INVISIBLE);
-
-                   }
-                    Log.i("ASDF", "a 증가한다. + " + a);
-                    a++;
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-            */
         }
+
         public int getB_num() {
             return b_num;
         }
@@ -237,11 +199,11 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             position = holder.getAdapterPosition();
             num = boards.get(position).getHeartNum();
             board = boards.get(position);
-            count = boards.size() - (position+1);
+            count = boards.size() - (position + 1);
 
             /* 하트 누를 때 (증가) */
-            if (board.isHeart() == false) {
-                Log.i("ASD", "num증가~~~~~~"+board.isHeart());
+            if (!board.isHeart()) {
+                Log.i("ASD", "num증가~~~~~~" + board.isHeart());
                 board.setHeart(true);
                 num++;
                 board.setHeartNum(num);
@@ -254,7 +216,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             }
             /* 하트 누를 때 (감소) */
             else {
-                Log.i("ASD", "num감소~~~~~~"+board.isHeart());
+                Log.i("ASD", "num감소~~~~~~" + board.isHeart());
                 board.setHeart(false);
                 num--;
                 board.setHeartNum(num);
@@ -268,20 +230,21 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.i("ASD", "ssssssssssss : " + dataSnapshot.getValue());
-                        List<String> s= (ArrayList<String>)dataSnapshot.getValue();
+                        List<String> s = (ArrayList<String>) dataSnapshot.getValue();
 
-                        for(int i=1, k=1; i<s.size(); i++) {
+                        for (int i = 1, k = 1; i < s.size(); i++) {
                             map = new HashMap<>();
                             map.put(Integer.toString(0), s.get(0));
-                            if(s.get(i).equals(id) == false) {
+                            if (!s.get(i).equals(id)) {
                                 Log.i("ASD", "ssssssssssss : " + s.size() + " dd" + k);
                                 map.put(Integer.toString(k), s.get(i));
                                 k++;
-                            }
-                            else Log.i("ASD", "dddddddddddddd " +s.get(i));
+                            } else
+                                Log.i("ASD", "dddddddddddddd " + s.get(i));
                         }
                         FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).setValue(map);
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
@@ -294,17 +257,19 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
                         int n = child.child("num").getValue(Integer.class);
 
-                        if(n == count){
+                        if (n == count) {
                             child.child("heartNum").getRef().setValue(num);
-                            Log.d("ASD", "잘되는지 모르겟네"+n+  " num " +num);
-                        }else Log.d("ASD", "잘되는지 모르겟네----"+n);
+                            Log.d("ASD", "잘되는지 모르겟네" + n + " num " + num);
+                        } else Log.d("ASD", "잘되는지 모르겟네----" + n);
                     }
                 }
+
                 @Override
-                public void onCancelled(DatabaseError databaseError) {}
+                public void onCancelled(DatabaseError databaseError) {
+                }
             });
         }
     }
@@ -322,26 +287,28 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         public void onClick(View v) {
             position = holder.getAdapterPosition();
             board = boards.get(position);
-            Log.i("ASDF", " --: " +board.getNum());
+            Log.i("ASDF", " --: " + board.getNum());
 
             Query query = FirebaseDatabase.getInstance().getReference().child("board");
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
                         int n = child.child("num").getValue(Integer.class);
 
-                        if(n == board.getNum()){
+                        if (n == board.getNum()) {
                             child.getRef().removeValue();
                             FirebaseDatabase.getInstance().getReference().child("comment").child(Integer.toString(n)).removeValue();
                             FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(n)).removeValue();
-                            Log.d("ASDF", "ddddd 잘돼  "+n);
-                        }else Log.d("ASDF", "ddddd 안돼  "+n);
+                            Log.d("ASDF", "ddddd 잘돼  " + n);
+                        } else Log.d("ASDF", "ddddd 안돼  " + n);
                     }
                 }
+
                 @Override
-                public void onCancelled(DatabaseError databaseError) {}
+                public void onCancelled(DatabaseError databaseError) {
+                }
             });
 
             boards.remove(board);
@@ -362,24 +329,18 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             position = holder.getAdapterPosition();
             board = boards.get(position);
 
-            Log.i("ASDF", "cccc: " +board.getNum());
-            Log.i("ASDF", "content: " + board.getContent() + " num " + board.getNum() + " img : " + board.getImageUrl());
-
             Intent intent = new Intent(v.getContext(), BoardWriteActivity.class);
-            intent.putExtra("content", board.getContent());
-            intent.putExtra("img", board.getImageUrl());
-            intent.putExtra("num", board.getNum());
+            Bundle bundle = new Bundle();
+            bundle.putInt("num", board.getNum());
+            bundle.putString("content", board.getContent());
+            holder.b_img.setDrawingCacheEnabled(true);
+            bundle.putParcelable("img", holder.b_img.getDrawingCache());
+            intent.putExtras(bundle);
+
             v.getContext().startActivity(intent);
-            //startActivityForResult(intent, REQ_WRITE);
-
-
         }
 
     }
-
-
-
-
 
     class OnSuccessGetImage implements OnSuccessListener<byte[]> {
         private ImageView b_img;

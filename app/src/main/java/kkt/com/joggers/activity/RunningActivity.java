@@ -18,7 +18,8 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.TextView;
 
@@ -54,6 +55,7 @@ import java.util.Map;
 
 import kkt.com.joggers.R;
 import kkt.com.joggers.model.Record;
+import kkt.com.joggers.controller.SettingManager;
 
 public class RunningActivity extends AppCompatActivity implements OnCompleteListener<LocationSettingsResponse>, OnMapReadyCallback, SensorEventListener, ValueEventListener {
     private static final int REQ_PERM = 0;
@@ -114,6 +116,14 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
         sensorManager = (SensorManager) getApplicationContext().getSystemService(SENSOR_SERVICE);
         if (sensorManager != null)
             accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        // 전화 수신 Listener 등록.... 전화수신 시 운동정지한다
+        if (new SettingManager(this).isStopOnCalling()) { // 설정 체크
+            @SuppressLint("ServiceCast")
+            TelephonyManager telManager = (TelephonyManager) getSystemService(TELECOM_SERVICE);
+            if (telManager != null)
+                telManager.listen(new MyPhoneStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
+        }
     }
 
     @Override
@@ -386,8 +396,8 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
         if (accSensor != null)
             sensorManager.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
         new TimeTask().execute();
+
         isRunning = true;
-        // TODO 이미지 버튼으로 바꿀 것...
         actionBtn.setText("운동 정지");
     }
 
@@ -400,4 +410,10 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
         actionBtn.setText("운동 시작");
     }
 
+    private class MyPhoneStateListener extends PhoneStateListener {
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+            onStopRunning(); // 운동정지
+        }
+    }
 }
