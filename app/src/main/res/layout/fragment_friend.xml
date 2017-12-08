@@ -5,19 +5,17 @@
     android:orientation="vertical"
     tools:context="kkt.com.joggers.fragment.FriendFragment">
 
-
-
     <EditText
+        android:id="@+id/f_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="검색"
-        android:id="@+id/f_edittext"
-        android:textAlignment="center"/>
+        android:textAlignment="center" />
 
     <ListView
         android:id="@+id/f_listview"
+        android:background="@drawable/default_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

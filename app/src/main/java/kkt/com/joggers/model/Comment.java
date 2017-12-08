@@ -1,10 +1,10 @@
 package kkt.com.joggers.model;
 
 public class Comment {
-    int num;
-    String time;
-    String id;
-    String content;
+    private int num;
+    private String time;
+    private String id;
+    private String content;
 
     // DataSnapshot.getValue(Comment.class)를 위한 기본생성자
     public Comment() {

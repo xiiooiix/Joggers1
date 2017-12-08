@@ -1,7 +1,6 @@
 package kkt.com.joggers.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,6 @@ import java.util.ArrayList;
 
 import kkt.com.joggers.R;
 import kkt.com.joggers.model.Comment;
-
-/**
- * Created by youngjae on 2017-11-25.
- */
 
 public class CommentAdapter extends BaseAdapter {
     private Context context;

@@ -1,97 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    cardview:cardCornerRadius="@dimen/main_cardview_cardCornerRadius"
+    cardview:cardElevation="@dimen/main_cardview_cardElevation">
 
-    <android.support.v7.widget.CardView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:padding="8dp">
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/board_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="id"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/board_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:text="time"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+        <ImageView
+            android:id="@+id/board_imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:layout_below="@+id/board_id"
+            android:layout_centerHorizontal="true"
+            android:padding="4dp" />
 
+        <TextView
+            android:id="@+id/board_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/board_imageView" />
 
-            <TextView
-                android:id="@+id/board_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:text="id"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                android:textColor="#000000" />
+        <Button
+            android:id="@+id/board_heart"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_below="@+id/board_content"
+            android:background="@drawable/heart_empty" />
 
-            <TextView
-                android:id="@+id/board_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:text="time"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+        <TextView
+            android:id="@+id/board_heartNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/board_content"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@+id/board_heart" />
 
-            <ImageView
-                android:id="@+id/board_imageView"
-                android:layout_width="match_parent"
-                android:layout_height="90dp"
-                android:layout_below="@+id/board_id"
-                android:layout_centerHorizontal="true"
-                android:padding="4dp" />
+        <TextView
+            android:id="@+id/board_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/board_heart"
+            android:text="comment" />
 
-            <TextView
-                android:id="@+id/board_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/board_imageView" />
+        <Button
+            android:id="@+id/board_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/board_heartNum"
+            android:text="삭제"
+            android:visibility="invisible" />
 
-            <Button
-                android:id="@+id/board_heart"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/board_content"
-                android:background="@drawable/heart_empty" />
+        <Button
+            android:id="@+id/board_revise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/board_delete"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/board_delete"
+            android:text="수정"
+            android:visibility="invisible" />
+    </RelativeLayout>
 
-            <TextView
-                android:id="@+id/board_heartNum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/board_content"
-                android:layout_marginTop="2dp"
-                android:layout_toEndOf="@+id/board_heart" />
-
-            <TextView
-                android:id="@+id/board_comment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/board_heart"
-                android:text="comment" />
-
-            <Button
-                android:id="@+id/board_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignTop="@+id/board_heartNum"
-                android:text="삭제" />
-
-            <Button
-                android:id="@+id/board_revise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/board_delete"
-                android:layout_marginEnd="10dp"
-                android:layout_toStartOf="@+id/board_delete"
-                android:text="수정" />
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+</android.support.v7.widget.CardView>

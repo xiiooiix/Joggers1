@@ -187,8 +187,8 @@ public class MainActivity extends AppCompatActivity
             sum += record.getDistance();
 
         // 운동 n 일차, 총 달린 거리(km)를 표시한다
-        totalDaysTv.setText(String.format(Locale.KOREAN, "운동 %d 일차", records.size()));
-        totalKmTv.setText(String.format(Locale.KOREAN, "총 %f KM", sum / 1000.0));
+        totalDaysTv.setText(String.format(Locale.KOREAN, "%d", records.size()));
+        totalKmTv.setText(String.format(Locale.KOREAN, "%.2f", sum / 1000.0));
     }
 
     @Override

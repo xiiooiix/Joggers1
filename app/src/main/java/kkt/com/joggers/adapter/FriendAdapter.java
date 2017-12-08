@@ -99,18 +99,7 @@ public class FriendAdapter extends BaseAdapter {
         // image_url로 FirebaseStorage 에 저장된 이미지를 가져온다
         FirebaseStorage.getInstance().getReferenceFromUrl("gs://joggers-699c4.appspot.com/user/" + user + ".jpg")
                 .getBytes(Long.MAX_VALUE)
-                .addOnSuccessListener(new OnSuccessGetImage(imageView, true));
-
-
-        /*
-        // 이미지뷰 동그랗게 하기
-        ((ImageView) view.findViewById(R.id.f_img)).setBackground(new ShapeDrawable(new OvalShape()));
-        if (Build.VERSION.SDK_INT >= 21) {
-            ((ImageView) view.findViewById(R.id.f_img)).setClipToOutline(true);
-            //  ((ImageView)view.findViewById(R.id.f_img)).setImageURI();
-        }
-        */
-
+                .addOnSuccessListener(new OnSuccessGetImage(imageView));
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

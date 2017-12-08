@@ -38,6 +38,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -54,13 +55,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import kkt.com.joggers.R;
-import kkt.com.joggers.model.Record;
 import kkt.com.joggers.controller.SettingManager;
+import kkt.com.joggers.model.Record;
 
-public class RunningActivity extends AppCompatActivity implements OnCompleteListener<LocationSettingsResponse>, OnMapReadyCallback, SensorEventListener, ValueEventListener {
+public class RunningActivity extends AppCompatActivity implements OnCompleteListener<LocationSettingsResponse>, OnMapReadyCallback, SensorEventListener, ValueEventListener, GoogleMap.OnMapClickListener {
     private static final int REQ_PERM = 0;
     private static final int REQ_SETTING = 1;
 
+    private SupportMapFragment mapFragment;
     private TextView distanceView;
     private TextView stepCountView;
     private TextView timeView;
@@ -109,7 +111,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
                 .addLocationRequest(request);
 
         // 지도 표시
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         // 걸음수 측정
@@ -120,7 +122,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
         // 전화 수신 Listener 등록.... 전화수신 시 운동정지한다
         if (new SettingManager(this).isStopOnCalling()) { // 설정 체크
             @SuppressLint("ServiceCast")
-            TelephonyManager telManager = (TelephonyManager) getSystemService(TELECOM_SERVICE);
+            TelephonyManager telManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             if (telManager != null)
                 telManager.listen(new MyPhoneStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
         }
@@ -222,6 +224,10 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
         locClient.requestLocationUpdates(request, locCallback, Looper.myLooper());
     }
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+    }
+
     /* 위치, 달린 거리 측정하는 callback class */
     private class RunningLocationCallback extends LocationCallback {
         @Override
@@ -231,7 +237,8 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
             // 구글 맵에 현재 위치 그리기
             Location curLoc = locationResult.getLastLocation();
             LatLng curLatLng = new LatLng(curLoc.getLatitude(), curLoc.getLongitude());
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, 15));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, 17));
+            googleMap.addMarker(new MarkerOptions().position(curLatLng));
 
             if (lastLoc == null) { // 이전 위치가 없으면
                 lastLoc = curLoc;
@@ -331,6 +338,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
     }
 
     /* 달린 시간 측정 */
+    @SuppressLint("StaticFieldLeak")
     private class TimeTask extends AsyncTask<Void, Long, Void> {
         private long startMillis;
 
