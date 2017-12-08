@@ -1,51 +1,35 @@
 {
   "project_info": {
-    "project_number": "430177363180",
-    "firebase_url": "https://joggers1-6d965.firebaseio.com",
-    "project_id": "joggers1-6d965",
-    "storage_bucket": "joggers1-6d965.appspot.com"
+    "project_number": "754145629404",
+    "firebase_url": "https://joggers-699c4.firebaseio.com",
+    "project_id": "joggers-699c4",
+    "storage_bucket": "joggers-699c4.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:430177363180:android:406401ebcc943ba0",
+        "mobilesdk_app_id": "1:754145629404:android:406401ebcc943ba0",
         "android_client_info": {
           "package_name": "kkt.com.joggers"
         }
       },
       "oauth_client": [
         {
-          "client_id": "430177363180-8nj22j58tfqcqeikdhhm1itgbb13pgtt.apps.googleusercontent.com",
+          "client_id": "754145629404-d8555krnlg87cip2vgdsrfpq1pnigdnd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "kkt.com.joggers",
-            "certificate_hash": "a9f894ba0fe70419b01d6b99c845f34c9d64cb4e"
+            "certificate_hash": "760662290989429f54d3f53d21808165d899d367"
           }
         },
         {
-          "client_id": "430177363180-cijgrl4apt5n5o8hjb9lvjv1ti09rt50.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "kkt.com.joggers",
-            "certificate_hash": "f915d5ad8c5d28ed8d8de9c287a6513a95bcb695"
-          }
-        },
-        {
-          "client_id": "430177363180-apmtjj9oneg1tgehmvac06kocou08ski.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "kkt.com.joggers",
-            "certificate_hash": "69abf40e9c553d6a4cf39945dffd1755601ed805"
-          }
-        },
-        {
-          "client_id": "430177363180-icb00m428n4h3pvuc6c96t3kppedahmr.apps.googleusercontent.com",
+          "client_id": "754145629404-hhjt4su59s5u98dqp2qin2naph08attu.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAE-rPb4aycwHtb9DEnPMcXr7bKIv5NVKo"
+          "current_key": "AIzaSyCDvwKgzh1bH_QD2AlzfehIOfRyNbalxxU"
         }
       ],
       "services": {
@@ -56,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "430177363180-icb00m428n4h3pvuc6c96t3kppedahmr.apps.googleusercontent.com",
+              "client_id": "754145629404-hhjt4su59s5u98dqp2qin2naph08attu.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

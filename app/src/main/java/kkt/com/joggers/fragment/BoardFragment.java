@@ -91,7 +91,7 @@ public class BoardFragment extends Fragment {
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.i("ASD", "onChildAdd ㄱㄱ");
+            Log.i("ASD", "onChildAdd ㄱㄱ" );
             adapter.addItem(dataSnapshot.getValue(Board.class));
             adapter.notifyDataSetChanged();
         }

@@ -53,7 +53,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     private static final int REQUEST_IMAGE_CROP = 4444;
     private static final String TAG = "Board";
 
-    private Uri imageUri;
+    private Uri imageUri, uri2;
     private ImageView write_img;
     private EditText write_content;
     private int count = 0;
@@ -61,6 +61,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     private Comment comment;
     private String re_imageUrl;
     private int re_num;
+    private boolean cropflag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,12 +144,10 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                                             FirebaseDatabase.getInstance().getReference().child("board").push().setValue(board);
                                             FirebaseDatabase.getInstance().getReference().child("comment").child(Integer.toString(count)).push().setValue(comment);
                                             FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).setValue(map);
-
                                         }
 
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
-
                                         }
                                     });
 
@@ -216,9 +215,8 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-
-            Query lastQuery = FirebaseDatabase.getInstance().getReference().child("board");
-            lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            Query query = FirebaseDatabase.getInstance().getReference().child("board");
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.getValue() == null) {
@@ -248,8 +246,12 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     }
 
     /* 이미지 파일 로드 & Storage에 저장 */
+
     private void captureCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,uri2);
+        Log.d("ASD","사진찍기 시작: "+uri2);
+
         startActivityForResult(intent, REQUEST_TAKE_PHOTO);
     }
 
@@ -262,12 +264,16 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
     public void cropImage(Uri imageUri) {
         Log.d("ASD", "사진자르기 시작: " + imageUri);
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
+        cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         cropIntent.setDataAndType(imageUri, "image/*");
-        cropIntent.putExtra("outputX", 1000); // crop한 이미지의 x축 크기, 결과물의 크기
-        cropIntent.putExtra("outputY", 1000); // crop한 이미지의 y축 크기
-        //cropIntent.putExtra("aspectX", 1); // crop 박스의 x축 비율, 1&1이면 정사각형
-        //cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
+        //cropIntent.putExtra("outputX", 1000); // crop한 이미지의 x축 크기, 결과물의 크기
+        //cropIntent.putExtra("outputY", 1000); // crop한 이미지의 y축 크기
+        cropIntent.putExtra("aspectX", 1); // crop 박스의 x축 비율, 1&1이면 정사각형
+        cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
         cropIntent.putExtra("scale", true);
+        cropIntent.putExtra("output", imageUri);
+        Log.d("ASD","사진자르기 시작22: "+imageUri);
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
     }
 
@@ -282,12 +288,15 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
             case REQUEST_TAKE_PHOTO:
             case REQUEST_TAKE_ALBUM:
                 if (resultCode == Activity.RESULT_OK) {
-                    cropImage(data.getData());
+                    Log.i("ASD" ,"ㅇ어매해해해88"  +uri2);
+                    uri2 = data.getData();
+                    cropImage(uri2);
                 }
                 break;
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
-                    imageUri = data.getData();
+                    //imageUri = data.getData();
+                    Log.i("ASD" ,"ㅇ어매해해해 " + imageUri);
                     write_img.setImageURI(imageUri);
                 }
                 break;

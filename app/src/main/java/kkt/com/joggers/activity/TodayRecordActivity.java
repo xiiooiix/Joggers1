@@ -1,5 +1,6 @@
 package kkt.com.joggers.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
@@ -33,14 +34,22 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
         stepCountView = findViewById(R.id.stepCount);
         timeView = findViewById(R.id.runningTime);
 
-        // 오늘 운동량 데이터 생성 OR 가져오기
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            Calendar calendar = Calendar.getInstance();
-            String key = String.format(Locale.KOREAN, "record/%s/%d|%d|%d", user.getDisplayName(), calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
-            FirebaseDatabase.getInstance().getReference(key)
-                    .addListenerForSingleValueEvent(this);
+        // 친구 데이터를 받아오는 경우...
+        Intent intent = getIntent();
+        String id = intent.getStringExtra("id");
+
+        if (id == null) {
+            // 오늘 운동량 데이터 생성 OR 가져오기
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null)
+                id = user.getDisplayName();
         }
+
+        Calendar calendar = Calendar.getInstance();
+        String key = String.format(Locale.KOREAN, "record/%s/%d|%d|%d", id, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+        FirebaseDatabase.getInstance().getReference(key)
+                .addListenerForSingleValueEvent(this);
+
     }
 
     @Override

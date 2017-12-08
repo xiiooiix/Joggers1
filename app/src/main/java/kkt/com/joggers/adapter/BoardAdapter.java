@@ -1,6 +1,5 @@
 package kkt.com.joggers.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,7 +15,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +32,7 @@ import java.util.Map;
 import kkt.com.joggers.R;
 import kkt.com.joggers.activity.BoardWriteActivity;
 import kkt.com.joggers.activity.CommentActivity;
+import kkt.com.joggers.controller.OnSuccessGetImage;
 import kkt.com.joggers.model.Board;
 
 public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> {
@@ -93,7 +92,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         // image_url로 FirebaseStorage 에 저장된 이미지를 가져온다
         FirebaseStorage.getInstance().getReferenceFromUrl(board.getImageUrl())
                 .getBytes(Long.MAX_VALUE)
-                .addOnSuccessListener(new OnSuccessGetImage(holder.b_img));
+                .addOnSuccessListener(new OnSuccessGetImage(holder.b_img, false));
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         id = currentUser.getDisplayName();
@@ -338,22 +337,9 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             intent.putExtras(bundle);
 
             v.getContext().startActivity(intent);
+
         }
 
-    }
-
-    class OnSuccessGetImage implements OnSuccessListener<byte[]> {
-        private ImageView b_img;
-
-        private OnSuccessGetImage(ImageView b_img) {
-            this.b_img = b_img;
-        }
-
-        @Override
-        public void onSuccess(byte[] bytes) {
-            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            b_img.setImageBitmap(bmp);
-        }
     }
 
 }
