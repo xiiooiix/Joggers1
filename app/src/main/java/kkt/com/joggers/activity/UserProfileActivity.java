@@ -22,7 +22,7 @@ import java.util.Locale;
 
 import kkt.com.joggers.R;
 import kkt.com.joggers.containers.DisableSwapViewPager;
-import kkt.com.joggers.service.UserProfileManager;
+import kkt.com.joggers.controller.UserProfileManager;
 
 /* 처음 로그인했을 때 사용자 프로필을 작성하는 Activity */
 public class UserProfileActivity extends AppCompatActivity implements View.OnClickListener {

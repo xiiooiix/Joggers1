@@ -1,11 +1,7 @@
 package kkt.com.joggers.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +11,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +28,7 @@ import java.util.Map;
 import kkt.com.joggers.R;
 import kkt.com.joggers.activity.BoardWriteActivity;
 import kkt.com.joggers.activity.CommentActivity;
+import kkt.com.joggers.controller.OnSuccessGetImage;
 import kkt.com.joggers.model.Board;
 
 public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> {
@@ -97,7 +93,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         // image_url로 FirebaseStorage 에 저장된 이미지를 가져온다
         FirebaseStorage.getInstance().getReferenceFromUrl(board.getImageUrl())
                 .getBytes(Long.MAX_VALUE)
-                .addOnSuccessListener(new OnSuccessGetImage(holder.b_img));
+                .addOnSuccessListener(new OnSuccessGetImage(holder.b_img, false));
 
 
         currentUser =  FirebaseAuth.getInstance().getCurrentUser();
@@ -184,37 +180,6 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
                 b_del.setVisibility(View.INVISIBLE);
                 b_re.setVisibility(View.INVISIBLE);
             }
-            /*
-            Log.i("ASDF", "a 가 머냐 + " + b_num);
-            Query query = FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(b_num));
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d("ASDF","a: "+a +  " 흠;;; " + dataSnapshot.getValue());
-
-                    List<String> s= (ArrayList<String>)dataSnapshot.getValue();
-                    Log.i("ASDF", "s : " + s + " ㅇㅇ: " +dataSnapshot.getKey());
-
-                   if(id.equals(s.get(0))) {
-                        Log.i("ASDF", "내 게시물이다. + " + a + "   " + s.size()+ "  dd: " +b_content.getText());
-                       b_del.setVisibility(View.VISIBLE);
-                       b_re.setVisibility(View.VISIBLE);
-                   }
-
-                    else {
-                       Log.i("ASDF", "내 게시물이 아니다. + " + a + "   " + s.size());
-                       b_del.setVisibility(View.INVISIBLE);
-                       b_re.setVisibility(View.INVISIBLE);
-
-                   }
-                    Log.i("ASDF", "a 증가한다. + " + a);
-                    a++;
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-            */
         }
         public int getB_num() {
             return b_num;
@@ -370,29 +335,9 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             intent.putExtra("img", board.getImageUrl());
             intent.putExtra("num", board.getNum());
             v.getContext().startActivity(intent);
-            //startActivityForResult(intent, REQ_WRITE);
-
 
         }
 
-    }
-
-
-
-
-
-    class OnSuccessGetImage implements OnSuccessListener<byte[]> {
-        private ImageView b_img;
-
-        private OnSuccessGetImage(ImageView b_img) {
-            this.b_img = b_img;
-        }
-
-        @Override
-        public void onSuccess(byte[] bytes) {
-            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            b_img.setImageBitmap(bmp);
-        }
     }
 
 }

@@ -19,12 +19,16 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import kkt.com.joggers.fragment.FitnessTipFragment;
+import kkt.com.joggers.fragment.FriendFragment;
 import kkt.com.joggers.fragment.MainFragment;
 import kkt.com.joggers.R;
 import kkt.com.joggers.fragment.BoardFragment;
 import kkt.com.joggers.fragment.SettingFragment;
+import kkt.com.joggers.model.Friend;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -58,6 +62,15 @@ public class MainActivity extends AppCompatActivity
             ((TextView) headerView.findViewById(R.id.total_km)).setText("총 N KM");
             headerView.findViewById(R.id.logout).setOnClickListener(this);
         }
+
+        /*
+        FirebaseStorage.getInstance().getReference()
+                .child("board")
+                .child("tazzang0921")
+                .putFile(imageUri);
+
+        */
+
 
         getSupportFragmentManager().beginTransaction().replace(R.id.content_main, new MainFragment()).commit();
     }
@@ -109,7 +122,11 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.content_main, new BoardFragment(), TAG)
                     .addToBackStack(TAG)
                     .commit();
-        } else if (id == R.id.nav_friend) {
+        } else if (id == R.id.nav_friend) { getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_main, new FriendFragment(), TAG)
+                .addToBackStack(TAG)
+                .commit();
         } else if (id == R.id.nav_tip) {
             getSupportFragmentManager()
                     .beginTransaction()
