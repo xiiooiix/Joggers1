@@ -121,9 +121,10 @@ public class CommentAdapter extends DataLoadLimitAdapter {
                 LinearLayout layout = itemView.findViewById(R.id.itemLayout);
                 layout.removeView(content);
                 content = new EditText(context);
-                LinearLayout.LayoutParams contentParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams contentParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 contentParams.topMargin = 30;
                 content.setLayoutParams(contentParams);
+                ((EditText) content).setText(comment.getContent());
                 layout.addView(content);
 
                 modifyBtn = new Button(context);
@@ -132,20 +133,22 @@ public class CommentAdapter extends DataLoadLimitAdapter {
                 btnParams.gravity = Gravity.END;
                 modifyBtn.setText("수정");
                 modifyBtn.setLayoutParams(btnParams);
+                modifyBtn.setOnClickListener(this);
                 layout.addView(modifyBtn);
             } else if (v == deleteBtn) {
-                FirebaseDatabase.getInstance().getReference("board/" + key).removeValue();
+                FirebaseDatabase.getInstance().getReference("board/" + boardKey + "/comment/" + key).removeValue();
             } else if (v == modifyBtn) {
                 // 댓글 수정
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user == null)
                     return;
                 comment.setCotent(((EditText) content).getText().toString());
-                FirebaseDatabase.getInstance().getReference("board" + boardKey + "/comment/" + key).setValue(comment);
+                FirebaseDatabase.getInstance().getReference("board/" + boardKey + "/comment/" + key).setValue(comment);
 
                 // 아이템뷰 원상복귀
                 LinearLayout layout = itemView.findViewById(R.id.itemLayout);
                 layout.removeView(content);
+                modifyBtn.setOnClickListener(null);
                 layout.removeView(modifyBtn);
                 content = new TextView(context);
                 LinearLayout.LayoutParams contentParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

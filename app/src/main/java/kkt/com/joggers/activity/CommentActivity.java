@@ -93,7 +93,7 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
             String time = SimpleDateFormat.getDateTimeInstance().format(new Date());
             Comment comment = new Comment(user.getDisplayName(), time, contentEditText.getText().toString());
             FirebaseDatabase.getInstance().getReference("board/" + key + "/comment").push().setValue(comment);
-            finish();
+            contentEditText.setText("");
         } else if (v == cancelBtn) {
             finish();
         }

@@ -96,7 +96,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:background="@drawable/main_card_view_default_color"
+        android:background="@color/button_default"
         android:enabled="false"
         android:onClick="onClickActionButton"
         android:text="운동 시작"

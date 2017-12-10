@@ -58,7 +58,7 @@ import kkt.com.joggers.R;
 import kkt.com.joggers.controller.SettingManager;
 import kkt.com.joggers.model.Record;
 
-public class RunningActivity extends AppCompatActivity implements OnCompleteListener<LocationSettingsResponse>, OnMapReadyCallback, SensorEventListener, ValueEventListener, GoogleMap.OnMapClickListener {
+public class RunningActivity extends AppCompatActivity implements OnCompleteListener<LocationSettingsResponse>, OnMapReadyCallback, SensorEventListener, ValueEventListener {
     private static final int REQ_PERM = 0;
     private static final int REQ_SETTING = 1;
 
@@ -182,6 +182,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
                 .addOnCompleteListener(this, this);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
         try { // 위치 설정되어 있음
@@ -201,7 +202,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
             }
         } finally { // 운동시작 버튼 활성화
             actionBtn.setEnabled(true);
-            actionBtn.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            actionBtn.setBackground(getResources().getDrawable(R.drawable.main_card_view_default_color, null));
         }
     }
 
@@ -215,16 +216,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        requestLastLocation();
-    }
-
-    @SuppressLint("MissingPermission")
-    private void requestLastLocation() {
-        locClient.requestLocationUpdates(request, locCallback, Looper.myLooper());
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.566667, 126.978056), 17));
     }
 
     /* 위치, 달린 거리 측정하는 callback class */
@@ -236,11 +228,12 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
             // 구글 맵에 현재 위치 그리기
             Location curLoc = locationResult.getLastLocation();
             LatLng curLatLng = new LatLng(curLoc.getLatitude(), curLoc.getLongitude());
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, 17));
-            googleMap.addMarker(new MarkerOptions().position(curLatLng));
+            if (googleMap != null)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, 17));
 
             if (lastLoc == null) { // 이전 위치가 없으면
                 lastLoc = curLoc;
+                googleMap.addMarker(new MarkerOptions().position(curLatLng));
                 return;
             }
 
@@ -258,9 +251,9 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
                 //Log.i("TAG", "거리: " + distance + ", 속도: " + speed);
                 if (speed > 1.3 && speed < 17.8) {
                     totalDistance += distance;
-                    String text = String.valueOf(totalDistance) + " M";
-                    distanceView.setText(text);
+                    distanceView.setText(String.valueOf(totalDistance));
                     lastLoc = curLoc;
+                    googleMap.addMarker(new MarkerOptions().position(curLatLng));
                 }
             }
             lastLocTimeMillis = currentTimeMillis;
@@ -320,10 +313,8 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
             if (lastSensorTimeMillis > 0) {
                 long dTimeMillis = currentTimeMillis - lastSensorTimeMillis;
                 float speed = Math.abs(x + y + z - lastx - lasty - lastz) / dTimeMillis * 10000; // Meter/msec
-                if (speed > 800) {
-                    String text = String.valueOf(++stepCount / 2) + " 회";
-                    stepCountView.setText(text);
-                }
+                if (speed > 800)
+                    stepCountView.setText(String.valueOf(++stepCount / 2));
             }
             lastx = x;
             lasty = y;
@@ -397,9 +388,10 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
             onStopRunning();
     }
 
+    @SuppressLint("MissingPermission")
     private void onStartRunning() {
         if (locPermState && locSettingState)
-            requestLastLocation();
+            locClient.requestLocationUpdates(request, locCallback, Looper.myLooper());
         if (accSensor != null)
             sensorManager.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
         new TimeTask().execute();

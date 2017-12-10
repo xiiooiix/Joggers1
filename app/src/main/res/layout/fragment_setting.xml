@@ -6,7 +6,6 @@
     android:orientation="vertical"
     tools:context="kkt.com.joggers.fragment.SettingFragment">
 
-
     <Switch
         android:id="@+id/stopOnCalling"
         android:layout_width="match_parent"
@@ -19,7 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fragment_widget_margin"
-        android:text="진동 사용" />
+        android:text="진동 사용"
+        android:visibility="invisible" />
 
     <Switch
         android:id="@+id/notification"
@@ -33,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fragment_widget_margin"
-        android:text="음악 자동재생" />
+        android:text="음악 자동재생"
+        android:visibility="invisible" />
 
 </LinearLayout>

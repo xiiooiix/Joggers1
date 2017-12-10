@@ -24,6 +24,9 @@ import kkt.com.joggers.controller.UserProfileManager;
 import kkt.com.joggers.model.Record;
 
 public class TodayRecordActivity extends AppCompatActivity implements ValueEventListener, View.OnClickListener {
+    private final String DEFAULT_AGE = "20";
+    private final int DEFAULT_HEIGHT = 175;
+    private final int DEFAULT_WEIGHT = 70;
 
     private TextView distanceView, stepCountView, timeView;
     private TextView ageView, heightView, weightView;
@@ -65,11 +68,20 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
                 .addListenerForSingleValueEvent(this);
 
         manager = new UserProfileManager(this);
-        int birthYear = Integer.parseInt(manager.getBirth().split("|")[0]);
-        int age = calendar.get(Calendar.YEAR) - birthYear + 1;
-        ageView.setText(String.valueOf(age));
-        heightView.setText(String.valueOf(manager.getHeight()));
-        weightView.setText(String.valueOf(manager.getWeight()));
+        if (manager.getBirth() != null) {
+            int birthYear = Integer.parseInt(manager.getBirth().split("년")[0]);
+            int age = calendar.get(Calendar.YEAR) - birthYear + 1;
+            ageView.setText(String.valueOf(age));
+        } else
+            ageView.setText(DEFAULT_AGE);
+        if (manager.getHeight() != 0)
+            heightView.setText(String.valueOf(manager.getHeight()));
+        else
+            heightView.setText(String.valueOf(DEFAULT_HEIGHT));
+        if (manager.getWeight() != 0)
+            weightView.setText(String.valueOf(manager.getWeight()));
+        else
+            weightView.setText(String.valueOf(DEFAULT_WEIGHT));
     }
 
     @Override
@@ -87,8 +99,8 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
         long sec = record.getTime() % 60000 / 1000;
         timeView.setText(String.format(Locale.KOREAN, "%02d:%02d:%02d", hour, min, sec));
 
-        bmiView.setText(String.format(Locale.KOREAN, "%f", calcBMI(record.getDistance(), record.getTime())));
-        calorieView.setText(String.format(Locale.KOREAN, "%f", calcCalorie(record.getDistance(), record.getTime())));
+        bmiView.setText(String.format(Locale.KOREAN, "%.2f", calcBMI(record.getDistance(), record.getTime())));
+        calorieView.setText(String.format(Locale.KOREAN, "%.2f", calcCalorie(record.getDistance(), record.getTime())));
     }
 
     @Override
@@ -96,8 +108,8 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
     }
 
     private float calcBMI(float distance, long time) {
-        float weight = (manager.getWeight() != 0) ? manager.getWeight() : 80; // 체중
-        float height = (manager.getHeight() != 0) ? manager.getHeight() : 175; // 키
+        float weight = (manager.getWeight() != 0) ? manager.getWeight() : DEFAULT_WEIGHT; // 체중
+        float height = (manager.getHeight() != 0) ? manager.getHeight() : DEFAULT_HEIGHT; // 키
 
         float bmi = 0;
         // TODO bmi 지수 구하기

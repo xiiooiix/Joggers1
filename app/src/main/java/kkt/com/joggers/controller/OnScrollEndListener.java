@@ -11,7 +11,7 @@ public class OnScrollEndListener extends RecyclerView.OnScrollListener {
     public void onScrolled(RecyclerView rcView, int dx, int dy) {
         super.onScrolled(rcView, dx, dy);
         if (!rcView.canScrollVertically(1)) { // check able to scroll down
-            DataLoadLimitAdapter adapter = (BoardAdapter) rcView.getAdapter();
+            DataLoadLimitAdapter adapter = (DataLoadLimitAdapter) rcView.getAdapter();
             adapter.increaseLoadLimit();
         }
     }
