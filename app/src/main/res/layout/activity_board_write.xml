@@ -1,81 +1,88 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/write_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/icon_image"
-        android:scaleType="fitCenter" />
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/write_camera"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/ic_camera_alt_black_24dp" />
-
-        <Button
-            android:id="@+id/write_album"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/ic_photo_library_black_24dp" />
-
-        <Button
-            android:id="@+id/remove_img"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/ic_close_black_24dp" />
-    </LinearLayout>
-
-    <EditText
-        android:id="@+id/write_content"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="10dp"
-        android:elegantTextHeight="false"
-        android:gravity="top"
-        android:hint="내용"
-        android:inputType="text"
-        android:textColorHint="@color/colorPrimary" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end">
-
-        <Button
-            android:id="@+id/write_write"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorAccent"
-            android:text="작성"
-            android:textSize="20sp" />
+            android:gravity="end">
 
-        <Button
-            android:id="@+id/write_cancel"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/write_camera"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/ic_camera_alt_black_24dp" />
+
+            <Button
+                android:id="@+id/write_album"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/ic_photo_library_black_24dp" />
+
+            <Button
+                android:id="@+id/remove_img"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/ic_close_black_24dp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/write_image"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorAccent"
-            android:text="취소"
-            android:textSize="20sp" />
-    </LinearLayout>
+            android:layout_margin="8dp"
+            android:adjustViewBounds="true" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/write_content"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/edit_text_border"
+            android:elegantTextHeight="false"
+            android:gravity="top"
+            android:hint="내용"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textColorHint="@color/colorPrimary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/write_write"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/main_card_view_default_color"
+                android:text="작성"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/write_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/main_card_view_default_color"
+                android:text="취소"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

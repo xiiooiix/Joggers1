@@ -15,8 +15,11 @@ import kkt.com.joggers.R;
 import kkt.com.joggers.activity.FitnessTipContentActivity;
 import kkt.com.joggers.model.FitnessTipResImgs;
 
+/**
+ * FitnessTipFragment의 전체 팁들을 표시하는 Adapter
+ */
 public class FitnessTipAdapter extends RecyclerView.Adapter<FitnessTipAdapter.ViewHolder> implements AdapterView.OnItemClickListener {
-    private Context context;
+    private final Context context;
 
     public FitnessTipAdapter(Context context) {
         this.context = context;
@@ -24,15 +27,7 @@ public class FitnessTipAdapter extends RecyclerView.Adapter<FitnessTipAdapter.Vi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // 부모 Context로부터 inflater 가져오기
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-        // inflate R.layout.item_contact to View
-        View view = inflater.inflate(R.layout.item_fit_tip_title, parent, false);
-
-        // View를 담은 ViewHolder 반환
-        return new ViewHolder(view);
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_fit_tip_title, parent, false));
     }
 
     @Override
@@ -53,7 +48,7 @@ public class FitnessTipAdapter extends RecyclerView.Adapter<FitnessTipAdapter.Vi
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView titleView;
+        private final ImageView titleView;
 
         private ViewHolder(View itemView) {
             super(itemView);

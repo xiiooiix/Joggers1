@@ -2,28 +2,21 @@ package kkt.com.joggers.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import kkt.com.joggers.R;
 import kkt.com.joggers.activity.BoardWriteActivity;
@@ -31,71 +24,90 @@ import kkt.com.joggers.activity.CommentActivity;
 import kkt.com.joggers.controller.OnSuccessGetImage;
 import kkt.com.joggers.model.Board;
 
-public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> {
-    private Context context;
-    private ArrayList<Board> boards;
-    private boolean myBoard;
+public class BoardAdapter extends DataLoadLimitAdapter {
+    private final List<String> keys = new ArrayList<>();
+    private final List<Board> boards = new ArrayList<>();
+    private boolean myBoardFilter = false;
+    private boolean myHeartFilter = false;
 
-    private Board board;
-    private int count;
-    private int num;
-    private Map<String, String> map;
+    public BoardAdapter(Context context) {
+        super(context);
+        update();
+    }
 
-    public BoardAdapter(Context context, ArrayList<Board> boards, boolean myBoard) {
-        this.context = context;
-        this.boards = boards;
-        this.myBoard = myBoard;
+    @Override
+    protected void update() {
+        FirebaseDatabase.getInstance().getReference("board")
+                .removeEventListener(this);
+        FirebaseDatabase.getInstance().getReference("board")
+                .orderByChild("time")
+                .limitToLast(loadLimit)
+                .addValueEventListener(this);
+    }
+
+    public void changeMyBoardFilter() {
+        myBoardFilter = !myBoardFilter;
+        update();
+    }
+
+    public void changeMyHeartFilter() {
+        myHeartFilter = !myHeartFilter;
+        update();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext()); // 부모 Context 로부터 inflater 가져오기....
-        View view = inflater.inflate(R.layout.item_board, parent, false); // Inflate layout to View
-        return new ViewHolder(view); // View를 담은 ViewHolder 생성
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_board, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        board = boards.get(position);
-        holder.b_id.setText(board.getId());
-        holder.b_time.setText(board.getTime());
-        holder.b_content.setText(board.getContent());
-        holder.b_comment.setText("댓글 보기");
-        holder.b_num = board.getNum();
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        BoardAdapter.ViewHolder mHolder = (ViewHolder) holder;
+        Board board = boards.get(position);
 
-        if (board.getImageUrl() != null) {
-            // image_url로 FirebaseStorage 에 저장된 이미지를 가져온다
+        mHolder.b_id.setText(board.getId());
+        mHolder.b_time.setText(board.getTime());
+        mHolder.b_content.setText(board.getContent());
+
+        // 이미지 삽입
+        if (board.getImageUrl() != null)
             FirebaseStorage.getInstance().getReferenceFromUrl(board.getImageUrl())
                     .getBytes(Long.MAX_VALUE)
-                    .addOnSuccessListener(new OnSuccessGetImage(holder.b_img));
+                    .addOnSuccessListener(new OnSuccessGetImage(mHolder.b_img));
+        else
+            mHolder.b_img.setImageDrawable(null);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null)
+            return;
+
+        // 좋아요 여부, 개수 확인
+        int count = 0;
+        boolean like = false;
+        int res = R.drawable.heart_empty;
+        if (board.getHeart() != null) {
+            like = board.getHeart().containsKey(user.getDisplayName());
+            res = (like) ? R.drawable.heart_full : R.drawable.heart_empty;
+            count = board.getHeart().size();
         }
+        mHolder.b_heart.setImageDrawable(context.getResources().getDrawable(res, null));
+        mHolder.b_heart.setTag(like);
+        mHolder.b_heartNum.setText(String.valueOf(count));
 
-        Query query = FirebaseDatabase.getInstance().getReference("heart").child(String.valueOf(board.getNum()));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null)
-                    return;
-                List<String> s = (ArrayList<String>) dataSnapshot.getValue();
-                holder.b_heartNum.setText(String.valueOf(s.size() - 1));
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser == null)
-                    return;
-                for (int i = 1; i < s.size(); i++) {
-                    if (s.get(i).equals(currentUser.getDisplayName())) {
-                        board.setHeart(true);
-                        holder.b_btn.setBackground(context.getResources().getDrawable(R.drawable.heart_full));
-                    }
-                }
-            }
+        // 댓글 개수 확인
+        count = 0;
+        if (board.getComment() != null)
+            count = board.getComment().size();
+        mHolder.b_commentNum.setText(String.valueOf(count));
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-
-        if (!board.isHeart()) // 좋아요에 내가 없다!!
-            holder.b_btn.setBackground(context.getResources().getDrawable(R.drawable.heart_empty));
+        // 내 글이면 수정/삭제 버튼 Visible
+        if (!board.getId().equals(user.getDisplayName())) {
+            mHolder.b_edit.setVisibility(View.INVISIBLE);
+            mHolder.b_delete.setVisibility(View.INVISIBLE);
+        } else {
+            mHolder.b_edit.setVisibility(View.VISIBLE);
+            mHolder.b_delete.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -103,150 +115,90 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
         return boards.size();
     }
 
-    public void addItem(Board board) {
-        boards.add(0, board);
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        keys.clear();
+        boards.clear();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null || user.getDisplayName() == null)
+            return;
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            Board board = snapshot.getValue(Board.class);
+            if (board == null) // 잘못된 board를 받아오면 무시
+                continue;
+            // Filter가 true이고 내 게시물이 아니면 무시
+            if (myBoardFilter && !board.getId().equals(user.getDisplayName()))
+                continue;
+            // Filter가 true이고 내가 좋아요하지 않았으면 무시
+            if (myHeartFilter &&
+                    snapshot.child("heart").child(user.getDisplayName()).getValue(String.class) == null)
+                continue;
+
+            keys.add(0, snapshot.getKey());
+            boards.add(0, board);
+        }
+        notifyDataSetChanged();
     }
 
-    public void removeItem(Board board) {
-        boards.remove(board);
-    }
+    private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private final TextView b_id;
+        private final TextView b_time;
+        private final TextView b_content;
+        private final ImageView b_img;
+        private final ImageView b_heart;
+        private final ImageView b_comment;
+        private final TextView b_heartNum;
+        private final TextView b_commentNum;
+        private final ImageView b_edit;
+        private final ImageView b_delete;
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView b_id, b_time, b_content, b_heartNum, b_comment;
-        private ImageView b_img;
-        private Button b_btn, b_del, b_re;
-        private int b_num;
+        private ViewHolder(View view) {
+            super(view);
+            b_id = view.findViewById(R.id.board_id);
+            b_time = view.findViewById(R.id.board_time);
+            b_content = view.findViewById(R.id.board_content);
+            b_img = view.findViewById(R.id.board_image);
+            b_heart = view.findViewById(R.id.board_heart);
+            b_comment = view.findViewById(R.id.board_comment);
+            b_heartNum = view.findViewById(R.id.board_heart_num);
+            b_commentNum = view.findViewById(R.id.board_comment_num);
+            b_edit = view.findViewById(R.id.board_edit);
+            b_delete = view.findViewById(R.id.board_delete);
 
-        private ViewHolder(View itemVivew) {
-            super(itemVivew);
-            b_id = itemVivew.findViewById(R.id.board_id);
-            b_time = itemVivew.findViewById(R.id.board_time);
-            b_content = itemVivew.findViewById(R.id.board_content);
-            b_heartNum = itemVivew.findViewById(R.id.board_heartNum);
-            b_img = itemVivew.findViewById(R.id.board_imageView);
-            b_btn = itemVivew.findViewById(R.id.board_heart);
-            b_comment = itemVivew.findViewById(R.id.board_comment);
-
-            b_btn.setOnClickListener(this); //'좋아요' 버튼 onClickListener 설정
+            b_heart.setOnClickListener(this);
+            b_heart.setTag(false);
             b_comment.setOnClickListener(this);
-
-            if (myBoard) { // 나의 게시물 보기
-                b_del = itemVivew.findViewById(R.id.board_delete);
-                b_re = itemVivew.findViewById(R.id.board_revise);
-                b_del.setVisibility(View.VISIBLE);
-                b_re.setVisibility(View.VISIBLE);
-                b_del.setOnClickListener(this); //'삭제' 버튼 onClickListener 설정
-                b_re.setOnClickListener(this); //'수정' 버튼 onClickListener 설정
-            }
+            b_edit.setOnClickListener(this);
+            b_delete.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            if (v == b_btn) {
-                int position = getAdapterPosition();
-                num = boards.get(position).getHeartNum();
-                board = boards.get(position);
-                count = boards.size() - (position + 1);
+            Board board = boards.get(getAdapterPosition());
+            int index = boards.indexOf(board);
+            String key = keys.get(index);
 
-                if (!board.isHeart()) { // 하트 누를 때 (증가)
-                    board.setHeart(true);
-                    num++;
-                    board.setHeartNum(num);
-                    b_btn.setBackground(context.getResources().getDrawable(R.drawable.heart_full));
-                    b_heartNum.setText(String.valueOf(boards.get(position).getHeartNum()));
-                    Map<String, Object> m = new HashMap<>();
-                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                    if (currentUser == null)
-                        return;
-                    m.put(Integer.toString(num), currentUser.getDisplayName());
-                    FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).updateChildren(m);
-                } else { // 하트 누를 때 (감소)
-                    board.setHeart(false);
-                    num--;
-                    board.setHeartNum(num);
-                    b_btn.setBackground(context.getResources().getDrawable(R.drawable.heart_empty));
-                    b_heartNum.setText(String.valueOf(boards.get(position).getHeartNum()));
-
-                    /* heart 리스트 수정 */
-                    Query query = FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(board.getNum()));
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            List<String> s = (ArrayList<String>) dataSnapshot.getValue();
-                            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                            if (currentUser == null)
-                                return;
-                            for (int i = 1, k = 1; i < s.size(); i++) {
-                                map = new HashMap<>();
-                                map.put(Integer.toString(0), s.get(0));
-                                if (!s.get(i).equals(currentUser.getDisplayName())) {
-                                    map.put(Integer.toString(k), s.get(i));
-                                    k++;
-                                }
-                            }
-                            FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).setValue(map);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                        }
-                    });
-                }
-
-            /* 보드의 heartnum 수정 */
-                Query query = FirebaseDatabase.getInstance().getReference().child("board");
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot child : dataSnapshot.getChildren())
-                            if (child.child("num").getValue(Integer.class) == count)
-                                child.child("heartNum").getRef().setValue(num);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-            } else if (v == b_del) {
-                board = boards.get(getAdapterPosition());
-                Query query = FirebaseDatabase.getInstance().getReference().child("board");
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            if (child.child("num").getValue(Integer.class) == board.getNum()) {
-                                child.getRef().removeValue();
-                                FirebaseDatabase.getInstance().getReference().child("comment").child(Integer.toString(board.getNum())).removeValue();
-                                FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(board.getNum())).removeValue();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-
-                boards.remove(board);
-                notifyDataSetChanged();
-            } else if (v == b_re) {
-                int position = getAdapterPosition();
-                board = boards.get(position);
-
-                Intent intent = new Intent(v.getContext(), BoardWriteActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt("num", board.getNum());
-                bundle.putString("content", board.getContent());
-                b_img.setDrawingCacheEnabled(true);
-                bundle.putParcelable("img", b_img.getDrawingCache());
-                intent.putExtras(bundle);
-
-                v.getContext().startActivity(intent);
+            if (v == b_heart) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null || user.getDisplayName() == null)
+                    return;
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                if ((boolean) b_heart.getTag()) // 좋아요 해제
+                    database.getReference("board/" + key + "/heart/" + user.getDisplayName()).removeValue();
+                else // 좋아요 설정
+                    database.getReference("board/" + key + "/heart/").child(user.getDisplayName()).setValue(user.getDisplayName());
             } else if (v == b_comment) {
                 Intent intent = new Intent(context, CommentActivity.class);
-                intent.putExtra("num", b_num);
-                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                intent.putExtra("key", key);
+                context.startActivity(intent);
+            } else if (v == b_edit) {
+                Intent intent = new Intent(context, BoardWriteActivity.class);
+                intent.putExtra("key", key);
+                context.startActivity(intent);
+            } else if (v == b_delete) {
+                FirebaseDatabase.getInstance().getReference("board/" + key).removeValue();
             }
+            notifyItemChanged(getAdapterPosition());
         }
     }
 

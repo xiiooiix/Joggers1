@@ -24,7 +24,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.Locale;
 import java.util.Vector;
@@ -37,7 +36,6 @@ import kkt.com.joggers.controller.SettingManager;
 import kkt.com.joggers.fragment.BoardFragment;
 import kkt.com.joggers.fragment.SettingFragment;
 import kkt.com.joggers.model.Record;
-import kkt.com.joggers.model.Friend;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, ValueEventListener {

@@ -12,6 +12,10 @@ import kkt.com.joggers.R;
 import kkt.com.joggers.adapter.FitnessTipAdapter;
 import kkt.com.joggers.adapter.MarginItemDecoration;
 
+/**
+ * 화면역할: 모든 팁들을 볼 수 있는 프래그먼트
+ * 화면위치: Drawer에서 '팁'을 선택하면 FitnessTipFragment로 진입한다
+ */
 public class FitnessTipFragment extends Fragment {
 
     @Override
@@ -25,7 +29,7 @@ public class FitnessTipFragment extends Fragment {
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rcView.setLayoutManager(gridLayoutManager);
 
-        RecyclerView.ItemDecoration itemDecoration = new MarginItemDecoration(20);
+        RecyclerView.ItemDecoration itemDecoration = new MarginItemDecoration();
         rcView.addItemDecoration(itemDecoration);
 
         return view;

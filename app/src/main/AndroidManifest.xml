@@ -82,6 +82,10 @@
             android:name=".activity.ProfileActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.CommentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".controller.MyFirebaseMessagingService"

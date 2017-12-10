@@ -29,7 +29,14 @@
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 M"
+            android:layout_marginEnd="3dp"
+            android:text="0"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M"
             android:textSize="20sp" />
     </LinearLayout>
 
@@ -49,7 +56,14 @@
             android:id="@+id/stepCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 회"
+            android:layout_marginEnd="3dp"
+            android:text="0"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="회"
             android:textSize="20sp" />
     </LinearLayout>
 
@@ -82,7 +96,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:background="@color/button_default"
+        android:background="@drawable/main_card_view_default_color"
         android:enabled="false"
         android:onClick="onClickActionButton"
         android:text="운동 시작"

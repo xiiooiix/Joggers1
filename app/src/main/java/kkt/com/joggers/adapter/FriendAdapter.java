@@ -2,18 +2,7 @@ package kkt.com.joggers.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.graphics.BitmapCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -38,9 +24,9 @@ import kkt.com.joggers.model.Friend;
  */
 
 public class FriendAdapter extends BaseAdapter {
-    private Context context;
+    private final Context context;
     private ArrayList<Friend> friends;
-    private boolean flag;
+    private final boolean flag;
 
     public FriendAdapter(Context context, ArrayList<Friend> friends, boolean flag) {
         this.context = context;
@@ -72,7 +58,7 @@ public class FriendAdapter extends BaseAdapter {
 
 
         Friend friend = (Friend) getItem(position);
-        final TextView textView = (TextView) view.findViewById(R.id.f_text);
+        final TextView textView = view.findViewById(R.id.f_text);
         final ImageView imageView = view.findViewById(R.id.f_img);
 
         textView.setText(friend.getId());

@@ -6,42 +6,33 @@
     android:orientation="vertical"
     tools:context="kkt.com.joggers.fragment.SettingFragment">
 
-    <LinearLayout
+
+    <Switch
+        android:id="@+id/stopOnCalling"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_margin="@dimen/fragment_widget_margin"
+        android:text="운동 중 전화 오면 일시중지" />
 
-        <Switch
-            android:id="@+id/stopOnCalling"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/fragment_widget_margin"
-            android:layout_weight="1"
-            android:text="운동 중 전화 오면 일시중지" />
+    <Switch
+        android:id="@+id/vibration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fragment_widget_margin"
+        android:text="진동 사용" />
 
-        <Switch
-            android:id="@+id/vibration"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/fragment_widget_margin"
-            android:layout_weight="1"
-            android:text="진동 사용" />
+    <Switch
+        android:id="@+id/notification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fragment_widget_margin"
+        android:text="앱 알림 받기" />
 
-        <Switch
-            android:id="@+id/notification"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/fragment_widget_margin"
-            android:layout_weight="1"
-            android:text="앱 알림 받기" />
+    <Switch
+        android:id="@+id/musicAutoPlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fragment_widget_margin"
+        android:text="음악 자동재생" />
 
-        <Switch
-            android:id="@+id/musicAutoPlay"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/fragment_widget_margin"
-            android:layout_weight="1"
-            android:text="음악 자동재생" />
-
-    </LinearLayout>
 </LinearLayout>

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -24,35 +24,34 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import kkt.com.joggers.R;
+import kkt.com.joggers.controller.OnSuccessGetImage;
 import kkt.com.joggers.model.Board;
-import kkt.com.joggers.model.Comment;
 
-public class BoardWriteActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final int MY_PERMISSION_CAMERA = 1111;
-    private static final int REQUEST_TAKE_PHOTO = 2222;
-    private static final int REQUEST_TAKE_ALBUM = 3333;
-    private static final int REQUEST_IMAGE_CROP = 4444;
+public class BoardWriteActivity extends AppCompatActivity implements ValueEventListener, View.OnClickListener {
+    private static final int MY_PERMISSION_CAMERA = 0;
+    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int REQUEST_TAKE_ALBUM = 2;
+    private static final int REQUEST_IMAGE_CROP = 3;
 
+    private Button cameraBtn, albumBtn, removeBtn;
+    private ImageView imageView;
+    private EditText contentEditText;
+    private Button writeBtn;
+    private Button cancelBtn;
+
+    private String key;
+    private Board oldBoard;
+    private boolean imagePerm = false; // 사진, 스토리지 사용 권한
     private Uri imageUri;
-    private ImageView write_img;
-    private EditText write_content;
-    private int count = 0;
-    private Board board;
-    private Comment comment;
-    private int re_num;
+    private String imageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,151 +59,75 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_board_write);
 
         /* 입력폼 */
-        write_img = findViewById(R.id.write_image);
-        write_content = findViewById(R.id.write_content);
+        cameraBtn = findViewById(R.id.write_camera);
+        albumBtn = findViewById(R.id.write_album);
+        removeBtn = findViewById(R.id.remove_img);
+        imageView = findViewById(R.id.write_image);
+        contentEditText = findViewById(R.id.write_content);
+        writeBtn = findViewById(R.id.write_write);
+        cancelBtn = findViewById(R.id.write_cancel);
 
         /* OnClickListener 설정 */
-        findViewById(R.id.write_write).setOnClickListener(this);
-        findViewById(R.id.write_cancel).setOnClickListener(this);
-        findViewById(R.id.write_camera).setOnClickListener(this);
-        findViewById(R.id.write_album).setOnClickListener(this);
-        findViewById(R.id.remove_img).setOnClickListener(this);
+        cameraBtn.setOnClickListener(this);
+        albumBtn.setOnClickListener(this);
+        removeBtn.setOnClickListener(this);
+        writeBtn.setOnClickListener(this);
+        cancelBtn.setOnClickListener(this);
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            re_num = bundle.getInt("num");
-            if (re_num != -1) {
-                write_content.setText(bundle.getString("content"));
-                write_img.setImageBitmap((Bitmap) bundle.getParcelable("img"));
-            }
-        }
+        /* key가 넘어오면 게시글을 수정한다 */
+        key = getIntent().getStringExtra("key");
+        if (key == null)
+            return;
+        writeBtn.setText("수정");
+        FirebaseDatabase.getInstance().getReference("board/" + key)
+                .addListenerForSingleValueEvent(this);
+    }
 
-        /* 권한설정 */
-        checkPermission();
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        oldBoard = dataSnapshot.getValue(Board.class);
+        if (oldBoard == null)
+            return;
+        if (oldBoard.getImageUrl() != null)
+            FirebaseStorage.getInstance().getReferenceFromUrl(oldBoard.getImageUrl())
+                    .getBytes(Long.MAX_VALUE)
+                    .addOnSuccessListener(new OnSuccessGetImage(imageView));
+        imageUrl = oldBoard.getImageUrl();
+        contentEditText.setText(oldBoard.getContent());
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
     }
 
     /* Activity 내의 모든 OnClickEvent를 처리한다 */
     @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
-
-        if (viewId == R.id.write_write && re_num == -1) { //작성
-            /* Storage에 이미지 업로드 */
-            FirebaseStorage.getInstance().getReference()
-                    .child("board")
-                    .child(String.valueOf(imageUri.hashCode()))
-                    .putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // 작성한 글을 RealTime DB의 Board 테이블에 추가한다
-                            /* 작성자, 작성시간 */
-                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            if (user == null)
-                                return;
-                            final String time = SimpleDateFormat.getDateTimeInstance().format(new Date());
-                            final Uri imageUrl = taskSnapshot.getDownloadUrl();
-
-                            FirebaseDatabase.getInstance().getReference().child("board").runTransaction(new Transaction.Handler() {
-                                @Override
-                                public Transaction.Result doTransaction(final MutableData mutableData) {
-
-                                    Query lastQuery = FirebaseDatabase.getInstance().getReference().child("board").orderByKey().limitToLast(1);
-                                    lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.getValue() != null)
-                                                for (DataSnapshot child : dataSnapshot.getChildren())
-                                                    count = child.child("num").getValue(Integer.class) + 1;
-
-                                             /* 게시글 data 생성 & INSERT */
-                                            board = new Board(user.getDisplayName(), time, String.valueOf(imageUrl), String.valueOf(write_content.getText()), 0, count);
-                                            comment = new Comment(0, "작성자", "작성자", time);
-                                            Map<String, String> map = new HashMap<>();
-                                            map.put("0", user.getDisplayName());
-                                            FirebaseDatabase.getInstance().getReference().child("board").push().setValue(board);
-                                            FirebaseDatabase.getInstance().getReference().child("comment").child(Integer.toString(count)).push().setValue(comment);
-                                            FirebaseDatabase.getInstance().getReference().child("heart").child(Integer.toString(count)).setValue(map);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-                                        }
-                                    });
-
-                                    //mutableData.child("board/count").setValue(board);
-                                    //mutableData.child("comment/count").setValue("123");
-                                    return Transaction.success(mutableData);
-                                }
-
-                                @Override
-                                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(BoardWriteActivity.this, "작성 실패", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-            /* MainActivity로 */
-            setResult(RESULT_OK);
-            finish();
-        } else if (viewId == R.id.write_cancel) { //취소
-            setResult(RESULT_CANCELED);
-            finish();
-        } else if (viewId == R.id.write_camera) { //사진 찍어서 업로드
-            captureCamera();
-        } else if (viewId == R.id.write_album) { //앨범에서 찾아서 업로드
-            getAlbum();
-        } else if (viewId == R.id.remove_img) {
+    public void onClick(View view) {
+        if (view == cameraBtn) { // 사진 찍어서 업로드
+            checkPermission();
+            if (imagePerm)
+                captureCamera();
+        } else if (view == albumBtn) { // 앨범에서 찾아서 업로드
+            checkPermission();
+            if (imagePerm)
+                getAlbum();
+        } else if (view == removeBtn) // 올린 사진 제거
             removeImage();
+
+        else if (view == writeBtn) { // 작성
+            if (imageUri != null)
+                uploadImage();
+            else
+                writeBoard();
+            finish();
+        } else if (view == cancelBtn) { //취소
+            if (imageUri != null)
+                getContentResolver().delete(imageUri, null, null);
+            finish();
         }
-
-        /* 수정일때 */
-        else if (viewId == R.id.write_write) {
-            /* 그림 추가할 경우 */
-            FirebaseStorage.getInstance().getReference()
-                    .child("board")
-                    .child(String.valueOf(imageUri.hashCode()))
-                    .putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(BoardWriteActivity.this, "작성 실패", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-            Query query = FirebaseDatabase.getInstance().getReference().child("board");
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() != null) {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            if (re_num == child.child("num").getValue(Integer.class)) {
-                                String ss = write_content.getText().toString();
-                                child.child("content").getRef().setValue(ss);
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-        }
-
     }
 
-    /* 이미지 파일 로드 & Storage에 저장 */
+    /* 이미지 파일 로드 & 기기 Storage에 저장 */
     private void captureCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, REQUEST_TAKE_PHOTO);
@@ -216,7 +139,7 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
         startActivityForResult(intent, REQUEST_TAKE_ALBUM);
     }
 
-    public void cropImage(Uri imageUri) {
+    private void cropImage() {
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
         cropIntent.setDataAndType(imageUri, "image/*");
         cropIntent.putExtra("outputX", 1280); // crop한 이미지의 x축 크기, 결과물의 크기
@@ -227,7 +150,8 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
 
     private void removeImage() {
         imageUri = null;
-        write_img.setImageDrawable(getDrawable(R.drawable.icon_image));
+        imageUrl = null;
+        imageView.setImageDrawable(null);
     }
 
     @Override
@@ -236,32 +160,70 @@ public class BoardWriteActivity extends AppCompatActivity implements View.OnClic
             case REQUEST_TAKE_PHOTO:
             case REQUEST_TAKE_ALBUM:
                 if (resultCode == Activity.RESULT_OK) {
-                    cropImage(data.getData());
+                    imageUri = data.getData();
+                    cropImage();
                 }
                 break;
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
                     imageUri = data.getData();
-                    write_img.setImageURI(imageUri);
+                    imageView.setImageURI(imageUri);
                 }
                 break;
+        }
+    }
+
+    /* Storage에 이미지 업로드 */
+    private void uploadImage() {
+        FirebaseStorage.getInstance().getReference("board/" + imageUri.hashCode())
+                .putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        getContentResolver().delete(imageUri, null, null);
+                        imageUrl = String.valueOf(taskSnapshot.getDownloadUrl());
+                        writeBoard();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(BoardWriteActivity.this, "이미지 업로드 실패", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /* 작성한 게시글을 서버에 저장 */
+    private void writeBoard() {
+        if (oldBoard == null) { // 게시글 새로 작성
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null)
+                return;
+            String time = SimpleDateFormat.getDateTimeInstance().format(new Date());
+            oldBoard = new Board(user.getDisplayName(), time, imageUrl, contentEditText.getText().toString());
+            FirebaseDatabase.getInstance().getReference("board").push().setValue(oldBoard);
+        } else { // 게시글 수정
+            if (oldBoard.getImageUrl() != null && !oldBoard.getImageUrl().equals(imageUrl))
+                FirebaseStorage.getInstance().getReferenceFromUrl(oldBoard.getImageUrl()).delete();
+            oldBoard.setImageUrl(imageUrl);
+            oldBoard.setContent(contentEditText.getText().toString());
+            FirebaseDatabase.getInstance().getReference("board/" + key).setValue(oldBoard);
         }
     }
 
     /* 권한 설정 */
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            return;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            imagePerm = true;
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, MY_PERMISSION_CAMERA);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == MY_PERMISSION_CAMERA && grantResults[0] == android.content.pm.PackageManager.PERMISSION_DENIED) {
-            Toast.makeText(this, "권한이 부족합니다", Toast.LENGTH_SHORT).show();
-            finish();
-        }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSION_CAMERA && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            imagePerm = true;
     }
+
 }

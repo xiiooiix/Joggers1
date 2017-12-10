@@ -62,7 +62,6 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
     private static final int REQ_PERM = 0;
     private static final int REQ_SETTING = 1;
 
-    private SupportMapFragment mapFragment;
     private TextView distanceView;
     private TextView stepCountView;
     private TextView timeView;
@@ -111,7 +110,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
                 .addLocationRequest(request);
 
         // 지도 표시
-        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         // 걸음수 측정

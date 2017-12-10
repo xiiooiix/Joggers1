@@ -8,7 +8,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class SettingManager {
     private static final String TOPIC = "advice";
 
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
     private boolean stopOnCalling; //전화 수신 시 운동중지
     private boolean vibration; //진동 사용
     private boolean notification; //알림 허용
