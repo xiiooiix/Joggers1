@@ -233,7 +233,7 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
 
             if (lastLoc == null) { // 이전 위치가 없으면
                 lastLoc = curLoc;
-                googleMap.addMarker(new MarkerOptions().position(curLatLng));
+                googleMap.addMarker(new MarkerOptions().position(curLatLng)).setTitle("시작지점");
                 return;
             }
 
@@ -247,13 +247,16 @@ public class RunningActivity extends AppCompatActivity implements OnCompleteList
             long currentTimeMillis = System.currentTimeMillis();
             if (lastLocTimeMillis > 0) {
                 double distance = distanceBetween(lastLoc.getLatitude(), lastLoc.getLongitude(), curLoc.getLatitude(), curLoc.getLongitude());
-                double speed = distance * 1000 / (currentTimeMillis - lastLocTimeMillis); // Meter/sec
+                double dSec = (currentTimeMillis - lastLocTimeMillis) / 1000;
+                double speed = distance / dSec; // Meter/sec
                 //Log.i("TAG", "거리: " + distance + ", 속도: " + speed);
                 if (speed > 1.3 && speed < 17.8) {
                     totalDistance += distance;
                     distanceView.setText(String.valueOf(totalDistance));
                     lastLoc = curLoc;
-                    googleMap.addMarker(new MarkerOptions().position(curLatLng));
+
+                    String markerTitle = String.format(Locale.KOREAN, "%.1f M / %d 분", distance, (int) dSec / 60);
+                    googleMap.addMarker(new MarkerOptions().position(curLatLng)).setTitle(markerTitle);
                 }
             }
             lastLocTimeMillis = currentTimeMillis;
