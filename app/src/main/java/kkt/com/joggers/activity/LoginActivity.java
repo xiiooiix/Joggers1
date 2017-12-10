@@ -26,8 +26,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import kkt.com.joggers.R;
-import kkt.com.joggers.activity.MainActivity;
-import kkt.com.joggers.activity.UserProfileActivity;
 import kkt.com.joggers.controller.UserProfileManager;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, ValueAnimator.AnimatorUpdateListener {
@@ -68,6 +66,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Firebase Authentication 객체 생성
         mAuth = FirebaseAuth.getInstance();
+
+        // 초기 설정
+        new UserProfileManager(this).save();
     }
 
     @Override
@@ -168,6 +169,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onAnimationUpdate(ValueAnimator animation) {
         float value = (float) animation.getAnimatedValue();
         bgImageView.setTranslationX(value);
-        titleImageView.setAlpha(-value/700);
+        titleImageView.setAlpha(-value / 700);
     }
 }
