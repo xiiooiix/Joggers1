@@ -89,7 +89,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
 
         } else if (v == showDataBtn) {
-            Intent intent = new Intent(this, TodayRecordActivity.class);
+            Intent intent = new Intent(this, FriendProfileActivity.class);
             intent.putExtra("id", id);
             startActivity(intent);
         }

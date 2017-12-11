@@ -15,7 +15,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.time.Year;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -60,6 +59,14 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null)
                 id = user.getDisplayName();
+        } else {
+            ageView.setVisibility(View.INVISIBLE);
+            heightView.setVisibility(View.INVISIBLE);
+            weightView.setVisibility(View.INVISIBLE);
+            bmiView.setVisibility(View.INVISIBLE);
+            calorieView.setVisibility(View.INVISIBLE);
+            editProfileBtn.setVisibility(View.INVISIBLE);
+
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -99,7 +106,20 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
         long sec = record.getTime() % 60000 / 1000;
         timeView.setText(String.format(Locale.KOREAN, "%02d:%02d:%02d", hour, min, sec));
 
-        bmiView.setText(String.format(Locale.KOREAN, "%.2f", calcBMI(record.getDistance(), record.getTime())));
+        float bmi = calcBMI();
+        String result;
+        if (bmi >= 30) {
+            result = "2단계 비만";
+        } else if (bmi >= 25) {
+            result = "1단계 비만";
+        } else if (bmi >= 23) {
+            result = "위험체중";
+        } else if (bmi >= 18.5) {
+            result = "정상";
+        } else {
+            result = "저체중";
+        }
+        bmiView.setText(String.format(Locale.KOREAN, "%.2f (%s)", bmi, result));
         calorieView.setText(String.format(Locale.KOREAN, "%.2f", calcCalorie(record.getDistance(), record.getTime())));
     }
 
@@ -107,12 +127,11 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
     public void onCancelled(DatabaseError databaseError) {
     }
 
-    private float calcBMI(float distance, long time) {
+    private float calcBMI() {
         float weight = (manager.getWeight() != 0) ? manager.getWeight() : DEFAULT_WEIGHT; // 체중
         float height = (manager.getHeight() != 0) ? manager.getHeight() : DEFAULT_HEIGHT; // 키
 
-        float bmi = 0;
-        // TODO bmi 지수 구하기
+        float bmi = weight / (height * height / 10000);
 
         return bmi;
     }
@@ -121,8 +140,16 @@ public class TodayRecordActivity extends AppCompatActivity implements ValueEvent
         float weight = (manager.getWeight() != 0) ? manager.getWeight() : 80; // 체중
         float height = (manager.getHeight() != 0) ? manager.getHeight() : 175; // 키
 
-        float calorie = 0;
-        // TODO 칼로리 구하기
+        float vel = distance / time * 3600;
+        float met;
+        if( vel < 4)
+            met = 2.3f;
+        else  if(vel<4.8)
+            met = 2.9f;
+        else
+            met = 3.3f;
+
+        float calorie = met * 3.5f * weight * (time/60000) * 5 / 1000 * 2;
 
         return calorie;
     }
