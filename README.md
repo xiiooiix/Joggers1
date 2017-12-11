@@ -17,7 +17,7 @@
 <p><li type=1>&nbsp;친구관리</li></p>
 
 <p><li type=1>&nbsp;앱 설정</li></p>
-- 운동 중 전화오면 일시정지 여부
-- Firebase Notification으로 송신되는 알림 거부
- 
+<li type=square>운동 중 전화오면 일시정지 여부</li>
+<li type=square>Firebase Notification으로 송신되는 알림 거부</li>
+
 </ul>
