@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class UserProfileManager {
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
     private String id; //Firebase에 등록된 구글ID
     private String birth; //생년월일
     private String gender; //성별

@@ -165,10 +165,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
-    @Override
-    public void onAnimationUpdate(ValueAnimator animation) {
-        float value = (float) animation.getAnimatedValue();
-        bgImageView.setTranslationX(value);
-        titleImageView.setAlpha(-value / 700);
-    }
 }

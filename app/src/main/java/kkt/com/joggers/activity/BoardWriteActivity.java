@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +34,7 @@ import java.util.Date;
 import kkt.com.joggers.R;
 import kkt.com.joggers.controller.OnSuccessGetImage;
 import kkt.com.joggers.model.Board;
+import kkt.com.joggers.model.Comment;
 
 public class BoardWriteActivity extends AppCompatActivity implements ValueEventListener, View.OnClickListener {
     private static final int MY_PERMISSION_CAMERA = 0;
@@ -143,15 +142,10 @@ public class BoardWriteActivity extends AppCompatActivity implements ValueEventL
 
     private void cropImage() {
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
-        cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         cropIntent.setDataAndType(imageUri, "image/*");
         cropIntent.putExtra("outputX", 1280); // crop한 이미지의 x축 크기, 결과물의 크기
         cropIntent.putExtra("outputY", 720); // crop한 이미지의 y축 크기
         cropIntent.putExtra("scale", true);
-        cropIntent.putExtra("output", imageUri);
-        //cropIntent.putExtra("return-data",true);
-
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
     }
 
@@ -173,8 +167,6 @@ public class BoardWriteActivity extends AppCompatActivity implements ValueEventL
                 break;
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    Bitmap bitmap = bundle.getParcelable("data");
                     imageUri = data.getData();
                     imageView.setImageURI(imageUri);
                 }

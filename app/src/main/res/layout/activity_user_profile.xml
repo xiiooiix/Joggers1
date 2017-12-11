@@ -42,7 +42,7 @@
             android:gravity="center_vertical"
             android:text="건너뛰기  "
             android:textSize="20sp"
-            android:drawableEnd="@drawable/ic_close_black_48dp"/>
+            android:drawableEnd="@drawable/ic_close_black_24dp"/>
 
         <TextView
             android:id="@+id/nextBtn"

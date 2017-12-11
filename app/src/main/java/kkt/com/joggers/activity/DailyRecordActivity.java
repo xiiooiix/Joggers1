@@ -39,7 +39,7 @@ public class DailyRecordActivity extends AppCompatActivity implements ValueEvent
 
     private int year, month;
     private int numOfDay;
-    private List<Record> recordList = new ArrayList<>();
+    private final List<Record> recordList = new ArrayList<>();
     private final String[] yItems = new String[]{"달린거리", "걸음수", "달린시간"};
     private final String[] yUnits = new String[]{"M", "회", "분"};
 
@@ -181,7 +181,7 @@ public class DailyRecordActivity extends AppCompatActivity implements ValueEvent
     }
 
     private class XaxisValueFormatter implements IAxisValueFormatter {
-        private List<String> dayList;
+        private final List<String> dayList;
 
         private XaxisValueFormatter(List<String> dayList) {
             this.dayList = dayList;

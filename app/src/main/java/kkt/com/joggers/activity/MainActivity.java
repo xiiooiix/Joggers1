@@ -81,19 +81,6 @@ public class MainActivity extends AppCompatActivity
             FirebaseMessaging.getInstance().subscribeToTopic("advice");
         else
             FirebaseMessaging.getInstance().unsubscribeFromTopic("advice");
-
-        /*
-        Friend friend = new Friend("소지섭");
-        Friend friend1 = new Friend("수지");
-        Friend friend2 = new Friend("박보검");
-        Friend friend3 = new Friend("더락");
-        Friend friend4 = new Friend("아이언맨");
-        FirebaseDatabase.getInstance().getReference().child("friend").child("tazzang0921").push().setValue(friend);
-        FirebaseDatabase.getInstance().getReference().child("friend").child("tazzang0921").push().setValue(friend1);
-        FirebaseDatabase.getInstance().getReference().child("friend").child("tazzang0921").push().setValue(friend2);
-        FirebaseDatabase.getInstance().getReference().child("friend").child("tazzang0921").push().setValue(friend3);
-        FirebaseDatabase.getInstance().getReference().child("friend").child("tazzang0921").push().setValue(friend4);
-        */
     }
 
     @Override
