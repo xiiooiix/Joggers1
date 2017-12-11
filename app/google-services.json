@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "430177363180-u10grvnh9jgocg2u8p6uimifmk1nmkaq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kkt.com.joggers",
+            "certificate_hash": "760662290989429f54d3f53d21808165d899d367"
+          }
+        },
+        {
           "client_id": "430177363180-8nj22j58tfqcqeikdhhm1itgbb13pgtt.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

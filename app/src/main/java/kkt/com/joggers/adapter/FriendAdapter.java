@@ -77,7 +77,7 @@ public class FriendAdapter extends BaseAdapter {
         String user = holder.textView.getText().toString();
 
         // image_url로 FirebaseStorage 에 저장된 이미지를 가져온다
-        FirebaseStorage.getInstance().getReferenceFromUrl("gs://joggers-699c4.appspot.com/user/" + user + ".jpg")
+        FirebaseStorage.getInstance().getReferenceFromUrl("gs://joggers1-6d965.appspot.com/user/" + user + ".jpg")
                 .getBytes(Long.MAX_VALUE)
                 .addOnSuccessListener(new OnSuccessGetImage(holder.imageView))
                 .addOnFailureListener(new OnFailureListener() {

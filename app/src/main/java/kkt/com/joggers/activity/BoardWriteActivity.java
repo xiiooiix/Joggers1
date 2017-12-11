@@ -7,10 +7,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +31,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -52,7 +57,10 @@ public class BoardWriteActivity extends AppCompatActivity implements ValueEventL
     private Board oldBoard;
     private boolean imagePerm = false; // 사진, 스토리지 사용 권한
     private Uri imageUri;
+    private Uri Uri, photoURI, albumURI;
     private String imageUrl;
+    private String imageFileName;
+    private boolean cropflag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,22 +124,76 @@ public class BoardWriteActivity extends AppCompatActivity implements ValueEventL
             removeImage();
 
         else if (view == writeBtn) { // 작성
-            if (imageUri != null)
+            if (Uri != null)
                 uploadImage();
             else
                 writeBoard();
             finish();
         } else if (view == cancelBtn) { //취소
-            if (imageUri != null)
-                getContentResolver().delete(imageUri, null, null);
+            if (Uri != null) {
+                getContentResolver().delete(Uri, null, null);
+            }
             finish();
         }
     }
 
     /* 이미지 파일 로드 & 기기 Storage에 저장 */
-    private void captureCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, REQUEST_TAKE_PHOTO);
+
+    private void captureCamera(){
+        String state = Environment.getExternalStorageState();
+        //외장 메모리 검사.
+        if(Environment.MEDIA_MOUNTED.equals(state)){
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+            if(takePictureIntent.resolveActivity(getPackageManager()) != null){
+                File photoFile = null;
+
+                try {
+                    photoFile = createImageFile();
+                }catch (IOException e){
+                    Log.d("ASD", "captureCamera - " + e.toString());
+                }
+
+                if(photoFile != null){
+                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                    Uri providerURI;
+                    if(currentapiVersion >= 24) {
+                        providerURI = FileProvider.getUriForFile(this, getPackageName() + ".provider", photoFile);
+                        // providerURI=FileProvider.getUriForFile()
+                    }
+                    else{
+                        providerURI = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), imageFileName));
+                    }
+                    imageUri = providerURI;
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI);
+                    startActivityForResult(takePictureIntent,REQUEST_TAKE_PHOTO);
+                }
+            }
+        }
+        else{
+            Toast.makeText(this,"저장공간이 접근 불가능한 기기입니다.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+    }
+
+
+    public File createImageFile() throws IOException {
+        //create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        //String imageFileName = "JPEG_" + timeStamp + ".jpg";
+        imageFileName = "JPEG_" + timeStamp + ".jpg";
+        File imageFile = null;
+        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "gyeom");
+
+        if(!storageDir.exists()){
+            Log.d("ASD", "createImageFile + "+ storageDir.toString());
+            storageDir.mkdirs();
+        }
+
+        imageFile = new File(storageDir, imageFileName);
+
+        return imageFile;
     }
 
     private void getAlbum() {
@@ -140,14 +202,41 @@ public class BoardWriteActivity extends AppCompatActivity implements ValueEventL
         startActivityForResult(intent, REQUEST_TAKE_ALBUM);
     }
 
-    private void cropImage() {
+    public void cropImage1() {  //사진 찍고 무조건 잘라내기
+        cropflag =false;
         Intent cropIntent = new Intent("com.android.camera.action.CROP");
+        cropIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        cropIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         cropIntent.setDataAndType(imageUri, "image/*");
-        cropIntent.putExtra("outputX", 1280); // crop한 이미지의 x축 크기, 결과물의 크기
-        cropIntent.putExtra("outputY", 720); // crop한 이미지의 y축 크기
+        //cropIntent.putExtra("outputX", 200); // crop한 이미지의 x축 크기, 결과물의 크기
+        //cropIntent.putExtra("outputY", 200); // crop한 이미지의 y축 크기
+        cropIntent.putExtra("aspectX", 1); // crop 박스의 x축 비율, 1&1이면 정사각형
+        cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
         cropIntent.putExtra("scale", true);
+        cropIntent.putExtra("output", imageUri); // 크랍된 이미지를 해당 경로에 저장
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
     }
+
+    public void cropImage(){    //ㅅ앨번 선택하고 잘라내기
+        cropflag = true;
+        Log.d("ASD", "cropImage - Call");
+        Log.d("ASD", "photoURI : " + photoURI + " / albumURI : " + albumURI);
+
+        Intent cropIntent = new Intent("com.android.camera.action.CROP");
+
+        // 50x50픽셀미만은 편집할 수 없다는 문구 처리 + 갤러리, 포토 둘다 호환하는 방법
+        cropIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        cropIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        cropIntent.setDataAndType(photoURI, "image/*");
+        //cropIntent.putExtra("outputX", 200); // crop한 이미지의 x축 크기, 결과물의 크기
+        //cropIntent.putExtra("outputY", 200); // crop한 이미지의 y축 크기
+        cropIntent.putExtra("aspectX", 1); // crop 박스의 x축 비율, 1&1이면 정사각형
+        cropIntent.putExtra("aspectY", 1); // crop 박스의 y축 비율
+        cropIntent.putExtra("scale", true);
+        cropIntent.putExtra("output", albumURI); // 크랍된 이미지를 해당 경로에 저장
+        startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
+    }
+
 
     private void removeImage() {
         imageUri = null;
@@ -159,16 +248,31 @@ public class BoardWriteActivity extends AppCompatActivity implements ValueEventL
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_TAKE_PHOTO:
+                cropImage1();
+                break;
             case REQUEST_TAKE_ALBUM:
                 if (resultCode == Activity.RESULT_OK) {
-                    imageUri = data.getData();
-                    cropImage();
+                    try {
+                        File albumFile = null;
+                        albumFile = createImageFile();
+                        photoURI = data.getData();
+                        albumURI = imageUri.fromFile(albumFile);
+
+                        cropImage();
+                    }catch (Exception e){
+                        Log.e("ASD", "TAKE_ALBUM_SINGLE - " + e.toString());
+                    }
                 }
                 break;
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
-                    imageUri = data.getData();
-                    imageView.setImageURI(imageUri);
+                    if(cropflag) {
+                        imageView.setImageURI(albumURI);
+                        Uri = albumURI;
+                    }else {
+                        imageView.setImageURI(imageUri);
+                        Uri = imageUri;
+                    }
                 }
                 break;
         }
@@ -176,12 +280,12 @@ public class BoardWriteActivity extends AppCompatActivity implements ValueEventL
 
     /* Storage에 이미지 업로드 */
     private void uploadImage() {
-        FirebaseStorage.getInstance().getReference("board/" + imageUri.hashCode())
-                .putFile(imageUri)
+        FirebaseStorage.getInstance().getReference("board/" + Uri.hashCode())
+                .putFile(Uri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        getContentResolver().delete(imageUri, null, null);
+                        //getContentResolver().delete(imageUri, null, null);
                         imageUrl = String.valueOf(taskSnapshot.getDownloadUrl());
                         writeBoard();
                     }

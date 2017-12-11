@@ -65,6 +65,10 @@ public class CommentAdapter extends DataLoadLimitAdapter {
             mHolder.editBtn.setVisibility(View.VISIBLE);
             mHolder.deleteBtn.setVisibility(View.VISIBLE);
         }
+        else{
+            mHolder.editBtn.setVisibility(View.INVISIBLE);
+            mHolder.deleteBtn.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

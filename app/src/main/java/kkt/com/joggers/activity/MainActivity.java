@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity
             headerView.findViewById(R.id.logout).setOnClickListener(this);
         }
 
+
         getSupportFragmentManager().beginTransaction().replace(R.id.content_main, new MainFragment()).commit();
 
         if (new SettingManager(this).isNotification())
