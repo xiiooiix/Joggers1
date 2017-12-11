@@ -36,7 +36,17 @@ public class FindActivity extends AppCompatActivity {
     private LinearLayout layout;
     private ArrayList<Friend> friends, recommand;
     private FriendAdapter f_adapter, r_adapter;
-
+    private String text ,id;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(text != null) {
+        /* 친구 목록에서 있나 출력 */
+            f_list_update();
+        /* 추천 목록 */
+            r_list_update();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +71,7 @@ public class FindActivity extends AppCompatActivity {
         r_list.setAdapter(r_adapter);
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        final String id = currentUser.getDisplayName();
+        id = currentUser.getDisplayName();
 
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,75 +100,80 @@ public class FindActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i("ASDF", "onTextChanged  시작한다. ");
-                find_f.setAlpha(0.0f);
-                find_r.setAlpha(0.0f);
-                f_adapter.removeAllItem();
-                f_adapter.notifyDataSetChanged();
-                r_adapter.removeAllItem();
-                r_adapter.notifyDataSetChanged();
-                final String text = s.toString();
-                Log.i("ASDF", "onTextChanged  널 아니요. ");
+                text = s.toString();
                 /* 친구 목록에서 있나 출력 */
-                Query query = FirebaseDatabase.getInstance().getReference().child("friend").child(id);
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getValue() == null) {
-                            find_f.setAlpha(0.0f);
-                            Log.d("ASDF", "친구가 없음");
-                        } else {
-                            for (DataSnapshot child : dataSnapshot.getChildren()) {
-                                Friend friend = child.getValue(Friend.class);
-                                Log.d("ASDF", "id: " + friend.getId() + " text: " + text);
-                                if (friend.getId().contains(text) && text.equals("") != true) {
-                                    if (f_adapter.findItem(friend)) {
-                                        friends.add(friend);
-                                        //f_adapter.addItem(friend);
-                                        f_adapter.notifyDataSetChanged();
-                                        find_f.setAlpha(1.0f);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-
+                f_list_update();
                 /* 추천 목록 */
-                Query query2 = FirebaseDatabase.getInstance().getReference().child("friend");
-                query2.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getValue() == null) {
-                            find_r.setAlpha(0.0f);
-                            Log.d("ASDF", "널입니다요");
-                        } else {
-                            for (DataSnapshot child : dataSnapshot.getChildren()) {
-                                Friend friend = new Friend(child.getKey());
-                                if (friend.getId().contains(text) && text.equals("") != true) {
-                                    if (r_adapter.findItem(friend) && f_adapter.findItem(friend)) {
-                                        r_adapter.addItem(friend);
-                                        r_adapter.notifyDataSetChanged();
-                                        find_r.setAlpha(1.0f);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {}
-                });
-                Log.i("ASDF", "onTextChanged  끝난다. ");
+                r_list_update();
             }
             @Override
-            public void afterTextChanged(Editable s) {
-                Log.i("ASDF", "afterTextChanged  :  " + s.toString());
+            public void afterTextChanged(Editable s) { }
+        });
+    }
+
+    public void f_list_update(){
+        find_f.setAlpha(0.0f);
+        f_adapter.removeAllItem();
+        f_adapter.notifyDataSetChanged();
+
+        Query query = FirebaseDatabase.getInstance().getReference().child("friend").child(id);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("ASDF1", "새로 시작 합니다.");
+                if (dataSnapshot.getValue() == null) {
+                    find_f.setAlpha(0.0f);
+                    Log.d("ASDF", "친구가 없음");
+                } else {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Friend friend = child.getValue(Friend.class);
+                        Log.d("ASDF", "id: " + friend.getId() + " text: " + text);
+                        if (friend.getId().contains(text) && text.equals("") != true) {
+                            if (f_adapter.findItem(friend)) {
+                                friends.add(friend);
+                                find_f.setAlpha(1.0f);
+                            }
+                        }
+                    }
+                }
+                f_adapter.notifyDataSetChanged();
             }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void r_list_update(){
+        find_r.setAlpha(0.0f);
+        r_adapter.removeAllItem();
+        r_adapter.notifyDataSetChanged();
+
+        Query query2 = FirebaseDatabase.getInstance().getReference().child("friend");
+        query2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    find_r.setAlpha(0.0f);
+                    Log.d("ASDF", "널입니다요");
+                } else {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Friend friend = new Friend(child.getKey());
+                        if (friend.getId().contains(text) && text.equals("") != true) {
+                            if (r_adapter.findItem(friend) && f_adapter.findItem(friend)) {
+                                if(!friend.getId().equals(id))
+                                    recommand.add(friend);
+                                find_r.setAlpha(1.0f);
+                            }
+                        }
+                    }
+                }
+                r_adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 }

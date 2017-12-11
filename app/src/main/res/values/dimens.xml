@@ -10,5 +10,5 @@
     <dimen name="main_cardview_layout_margin_top">16dp</dimen>
     <dimen name="main_cardview_layout_margin">8dp</dimen>
     <dimen name="main_cardview_cardCornerRadius">15dp</dimen>
-    <dimen name="main_cardview_cardElevation">4dp</dimen>
+    <dimen name="main_cardview_cardElevation">8dp</dimen>
 </resources>

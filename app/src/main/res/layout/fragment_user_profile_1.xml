@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/default_background"
     android:gravity="center"
     android:orientation="vertical">
 
@@ -10,15 +11,15 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:layout_marginStart="10dp"
+        android:labelFor="@+id/datePicker"
         android:text="생일을 입력해주세요"
-        android:textSize="20sp"
-        android:labelFor="@+id/datePicker"/>
+        android:textSize="20sp" />
 
     <DatePicker
         android:id="@+id/datePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleX="0.9"
-        android:scaleY="0.9"/>
+        android:scaleY="0.9" />
 
 </LinearLayout>

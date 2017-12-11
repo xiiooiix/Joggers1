@@ -1,9 +1,5 @@
 package kkt.com.joggers.model;
 
-/**
- * Created by youngjae on 2017-12-07.
- */
-
 public class Friend {
     private String id;
     private String imageUrl;

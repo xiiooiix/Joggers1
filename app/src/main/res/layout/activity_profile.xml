@@ -28,7 +28,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:background="@color/colorAccent"
-            android:onClick="onClickActionButton"
             android:text="추가하기"
             android:textSize="20sp" />
 
@@ -41,7 +40,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:background="@color/colorAccent"
-            android:onClick="onClickActionButton"
             android:text="운동기록"
             android:textSize="20sp" />
 

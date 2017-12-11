@@ -1,18 +1,10 @@
 package kkt.com.joggers.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.graphics.BitmapCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -33,11 +23,8 @@ import kkt.com.joggers.activity.ProfileActivity;
 import kkt.com.joggers.controller.OnSuccessGetImage;
 import kkt.com.joggers.model.Friend;
 
-/**
- * Created by youngjae on 2017-12-07.
- */
-
 public class FriendAdapter extends BaseAdapter {
+
     private Context context;
     private ArrayList<Friend> friends;
     private boolean flag;
@@ -45,6 +32,14 @@ public class FriendAdapter extends BaseAdapter {
     public FriendAdapter(Context context, ArrayList<Friend> friends, boolean flag) {
         this.context = context;
         this.friends = friends;
+        this.flag = flag;
+    }
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public void setFlag(boolean flag) {
         this.flag = flag;
     }
 
@@ -65,41 +60,32 @@ public class FriendAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
+        final Holder holder;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.friend_listview, parent, false);
+            holder = new Holder();
+            holder.imageView = view.findViewById(R.id.f_img);
+            holder.textView = view.findViewById(R.id.f_text);
+            view.setTag(holder);
+        } else {
+            holder = (Holder) view.getTag();
         }
 
-
         Friend friend = (Friend) getItem(position);
-        final TextView textView = (TextView) view.findViewById(R.id.f_text);
-        final ImageView imageView = view.findViewById(R.id.f_img);
-
-        textView.setText(friend.getId());
-        String user = textView.getText().toString();
-
-
-        final View finalView = view;
-        /*
-        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Log.i("ASDF", "사진 있습니당. :  " + uri);
-                ((ImageView)finalView.findViewById(R.id.f_img)).setImageURI(uri);
-                //((ImageView)finalView.findViewById(R.id.f_img))
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("ASDF", "사진 없습니당 ㅠㅠ");
-            }
-        });
-*/
+        holder.textView.setText(friend.getId());
+        String user = holder.textView.getText().toString();
 
         // image_url로 FirebaseStorage 에 저장된 이미지를 가져온다
         FirebaseStorage.getInstance().getReferenceFromUrl("gs://joggers-699c4.appspot.com/user/" + user + ".jpg")
                 .getBytes(Long.MAX_VALUE)
-                .addOnSuccessListener(new OnSuccessGetImage(imageView, true));
+                .addOnSuccessListener(new OnSuccessGetImage(holder.imageView))
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        holder.imageView.setImageDrawable(null);
+                    }
+                });
 
 
         /*
@@ -112,6 +98,7 @@ public class FriendAdapter extends BaseAdapter {
         */
 
 
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,27 +106,28 @@ public class FriendAdapter extends BaseAdapter {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("id", friends.get(position).getId());
-                imageView.setDrawingCacheEnabled(true);
-                bundle.putParcelable("img", imageView.getDrawingCache());
+                holder.imageView.setDrawingCacheEnabled(true);
+                bundle.putParcelable("img", holder.imageView.getDrawingCache());
                 bundle.putBoolean("flag", flag);
                 intent.putExtras(bundle);
                 v.getContext().startActivity(intent);
             }
         });
 
-
-        //이미지뷰도 해야한다.
-
         return view;
     }
+
+    class Holder {
+        TextView textView;
+        ImageView imageView;
+    }
+
 
     public void setItems(ArrayList<Friend> friends) {
         this.friends = friends;
     }
 
-    public void addItem(Friend friend) {
-        friends.add(0, friend);
-    }
+    public void addItem(Friend friend) { friends.add(0, friend);  }
 
     public void removeItem(Friend friend) {
         friends.remove(friend);

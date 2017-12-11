@@ -72,7 +72,6 @@ public class FriendFragment extends Fragment {
         FirebaseDatabase.getInstance().getReference("friend").child(id).push().setValue(c);
         */
 
-        Log.i("ASD", "프랜드 아잉교 : " + FirebaseDatabase.getInstance().getReference("friend").child(id));
 
         if(FirebaseDatabase.getInstance().getReference("friend").child(id) != null) {
             FirebaseDatabase.getInstance().getReference("friend")
@@ -88,15 +87,17 @@ public class FriendFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_WRITE && resultCode == Activity.RESULT_OK)
+        if (requestCode == REQ_WRITE && resultCode == Activity.RESULT_OK) {
             adapter.notifyDataSetChanged();
+        }
+        adapter.notifyDataSetChanged();
+        Log.i("ASDF", "ㄴㄴ프랜드 리셋!!" );
     }
 
     public class ChildEventAdapter implements ChildEventListener {
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.i("ASD", "onChildAdd ㄱㄱ" + dataSnapshot.getValue());
             adapter.addItem(dataSnapshot.getValue(Friend.class));
             adapter.notifyDataSetChanged();
         }
@@ -107,8 +108,14 @@ public class FriendFragment extends Fragment {
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-            Log.i("ASD", "onChildRemoved ㄱㄱ");
-            adapter.removeItem(dataSnapshot.getValue(Friend.class));
+            Friend friend = dataSnapshot.getValue(Friend.class);
+            for (int i = 0; i < adapter.getCount(); i++) {
+                Friend mFriend = (Friend) adapter.getItem(i);
+                if (mFriend.getId().equals(friend.getId())) {
+                    adapter.removeItem(mFriend);
+                }
+            }
+
             adapter.notifyDataSetChanged();
         }
 

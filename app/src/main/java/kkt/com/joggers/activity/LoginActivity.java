@@ -1,5 +1,6 @@
 package kkt.com.joggers.activity;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -24,14 +26,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import kkt.com.joggers.R;
-import kkt.com.joggers.activity.MainActivity;
-import kkt.com.joggers.activity.UserProfileActivity;
 import kkt.com.joggers.controller.UserProfileManager;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, ValueAnimator.AnimatorUpdateListener {
     private static final String TAG = "Joggers.LoginActivity";
     private static final int RC_SIGN_IN = 0;
 
+    private ImageView bgImageView;
+    private ImageView titleImageView;
     private SignInButton signInButton;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
@@ -41,9 +43,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        bgImageView = findViewById(R.id.bg_image_view);
+        titleImageView = findViewById(R.id.title_image_view);
+        ValueAnimator animator = ValueAnimator.ofFloat(0, -1500);
+        animator.addUpdateListener(this);
+        animator.setDuration(20000)
+                .start();
+
         // 로그인 Button 설정
         signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
         signInButton.setOnClickListener(this);
 
         // Configure Google Sign In
@@ -57,6 +66,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Firebase Authentication 객체 생성
         mAuth = FirebaseAuth.getInstance();
+
+        // 초기 설정
+        new UserProfileManager(this).save();
     }
 
     @Override
@@ -153,4 +165,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+        float value = (float) animation.getAnimatedValue();
+        bgImageView.setTranslationX(value);
+        titleImageView.setAlpha(-value / 700);
+    }
 }
